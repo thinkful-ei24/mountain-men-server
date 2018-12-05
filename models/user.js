@@ -11,6 +11,10 @@ const userSchema = new mongoose.Schema({
   type: {type: String, enum: ['DRIVER', 'USER'], default: 'USER', required: true}
 });
 
+userSchema.virtuals('fullName').get(function() {
+  return this.first + ' ' + this.last;
+});
+
 userSchema.set("toJSON", {
   virtuals: true,
   versionKey: false,
