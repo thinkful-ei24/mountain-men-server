@@ -12,6 +12,8 @@ const { dbConnect } = require('./db-mongoose');
 
 const authRouter = require('./routes/auth');
 const registerRouter = require('./routes/register');
+const jobRouter = require('./routes/jobs');
+
 require('dotenv').config;
 
 const app = express();
@@ -22,7 +24,10 @@ app.use(
   })
 );
 
-app.use(express.json())
+app.use(express.json());
+
+app.use('/api/jobs', jobRouter);
+
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 

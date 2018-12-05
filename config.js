@@ -1,5 +1,7 @@
 "use strict";
 
+console.log(process.env.DATABASE_URL);
+
 module.exports = {
   PORT: process.env.PORT || 8080,
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || "http://localhost:3000",
