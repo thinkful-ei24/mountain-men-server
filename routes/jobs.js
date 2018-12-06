@@ -38,20 +38,7 @@ app.get('/:id', (req, res, next) => {
     });
 });
 
-app.get('/:id', (req, res, next) => {
-  const userId = req.params.id;
-  if(!mongoose.Types.ObjectId.isValid(userId)) {
-    const err = new Error('Path is not a valid user id');
-    return next(err);
-  }
 
-  return Post.find({userId})
-    .then(dbRes => {
-      return res.json(dbRes).status(200);
-    }).catch(err => {
-      return next(err);
-    });
-});
 
 // just return all posts for now
 app.get('/', (req, res, next) => {
@@ -84,7 +71,7 @@ app.post('/:id', (req, res, next) => {
   const {title, description} = req.body;
   const jobPostingData = {
     userId, title, description, bids: [],
-    accepted: false, acceptedUserId: null
+    accepted: false, acceptedUserId: null, completed: false
   };
   const isValid = Joi.validate(jobPostingData, postSchema);
   if(!isValid) {
