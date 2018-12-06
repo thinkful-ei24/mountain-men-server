@@ -22,10 +22,6 @@ router.post('/refresh', jwtAuth, (req, res) => {
 });
 
 router.post('/', localAuth, (req, res) => {
-<<<<<<< HEAD
-  console.log(req.body, 'test');
-=======
->>>>>>> feature/posts
   const authToken = createAuthToken(req.user);
   res.json({ authToken });
 });
