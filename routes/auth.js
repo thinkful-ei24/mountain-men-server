@@ -10,7 +10,7 @@ const localAuth = passport.authenticate('local', options);
 function createAuthToken(user) {
   console.log(user, 'user');
   return jwt.sign({user}, JWT_SECRET, {
-    subject: user,
+    subject: user.email,
     expiresIn: JWT_EXPIRY
   });
 }
@@ -18,13 +18,13 @@ function createAuthToken(user) {
 const jwtAuth = passport.authenticate('jwt', {session: false, failWithError: true});
 
 router.post('/refresh', jwtAuth, (req, res) => {
-  const authToken = createAuthToken(req.body.email);
+  const authToken = createAuthToken(req.user);
   res.json({ authToken });
 });
 
 router.post('/', localAuth, (req, res) => {
   console.log(req.body, 'test');
-  const authToken = createAuthToken(req.body.email);
+  const authToken = createAuthToken(req.user);
   res.json({ authToken });
 });
 
