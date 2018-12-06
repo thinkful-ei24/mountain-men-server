@@ -16,21 +16,38 @@ const app = express();
 // accepted: {type: Boolean, default: false},
 // acceptedUserId: {type: ObjectId, ref: 'User'}
 
+// description ok as alphanumeric?
 const postSchema = Joi.object().keys({
+  title: Joi.string().min(3).max(40).required(),
+  description: Joi.string().alphanum().max(400),
+});
 
+// unprotected endpoint
+app.get('/:id', (req, res, next) => {
+  const userId = req.params.id;
+  if(!mongoose.Types.ObjectId.isValid(userId)) {
+    const err = new Error('Path is not a valid user id');
+    return next(err);
+  }
+
+  return Post.find({userId})
+    .then(dbRes => {
+      return res.json(dbRes).status(200);
+    }).catch(err => {
+      return next(err);
+    });
 });
 
 app.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
 
 app.post('/:id', (req, res, next) => {
-  const userId = req.params.id;
-
-  console.log(mongoose.Types.ObjectId.isValid(userId));
-  console.log(userId);
-  console.log(req.body);
+  // FIXME: doesn't check to see if the user id matches the path id
+  const userId = req.user.id;
+  console.log('req.user', req.user);
+  console.log(typeof req.user);
 
   // FIXME: refactor into middleware
-  const requiredFields = ["title", "description", "bids"];
+  const requiredFields = ["title", "description"];
   const missingField = requiredFields.find(field => !(field in req.body));
   if (missingField) {
     return res.status(422).json({
@@ -41,9 +58,9 @@ app.post('/:id', (req, res, next) => {
     });
   }
 
-  const {title, description, bids} = req.body;
+  const {title, description} = req.body;
   const jobPostingData = {
-    title, description, bids,
+    userId, title, description, bids: [],
     accepted: false, acceptedUserId: null
   };
   const isValid = Joi.validate(jobPostingData, postSchema);
@@ -61,16 +78,6 @@ app.post('/:id', (req, res, next) => {
       return res.location(`${req.originalUrl}/${dbRes.id}`).status(201).json(dbRes);
     })
     .catch(err => next(err));
-});
-
-app.get('/:id', (req, res, next) => {
-  const userId = req.params.id;
-  return Post.find({userId})
-    .then(dbRes => {
-      return res.json(dbRes).status(200);
-    }).catch(err => {
-      return next(err);
-    });
 });
 
 module.exports = app;
