@@ -22,7 +22,7 @@ app.use(
   })
 );
 
-app.use(express.json())
+app.use(express.json());
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 
@@ -34,6 +34,15 @@ app.use(
 
 app.use('/register', registerRouter);
 app.use('/login', authRouter);
+
+app.use((err, req, res, next) => {
+  if(err.message) {
+    const errBody = Object.assign({}, err, { message: err.message });
+    res.status(err.status).json(errBody);
+  } else {
+    res.status(500).json({ message: 'internal server error' });
+  }
+});
 
 function runServer(port = PORT) {
   const server = app
