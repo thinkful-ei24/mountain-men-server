@@ -37,6 +37,20 @@ app.get("/", (req, res, next) => {
 });
 
 // protected
+app.get('/:id', (req, res, next) => {
+  const userId = req.params.id;
+  if(!mongoose.Types.ObjectId.isValid(userId)) {
+    const err = new Error('Path is not a valid user id');
+    return next(err);
+  }
+   return Post.find({userId})
+    .then(dbRes => {
+      return res.json(dbRes).status(200);
+    }).catch(err => {
+      return next(err);
+    });
+});
+
 app.use(
   "/",
   passport.authenticate("jwt", { session: false, failWithError: true })
@@ -69,7 +83,7 @@ app.post("/:id", (req, res, next) => {
     accepted: false,
     acceptedUserId: null,
     completed: false,
-    date: req.body.date
+    date
   };
   const isValid = Joi.validate(jobPostingData, postSchema);
   if (!isValid) {
