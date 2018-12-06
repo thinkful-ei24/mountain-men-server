@@ -22,6 +22,8 @@ postSchema.set("toJSON", {
   transform: (doc, ret) => {
     delete ret._id;
     delete ret.__v;
+    // FIXME:
+    delete ret.bids;
     return ret;
   }
 });
