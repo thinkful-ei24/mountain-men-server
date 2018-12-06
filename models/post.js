@@ -10,11 +10,8 @@ const postSchema = new mongoose.Schema({
   bids: [{type: ObjectId, ref: 'User'}],
   accepted: {type: Boolean, default: false},
   acceptedUserId: {type: ObjectId, ref: 'User'},
-<<<<<<< HEAD
-  completed: { type: Boolean, default: false }
-=======
+  completed: { type: Boolean, default: false },
   date: Date
->>>>>>> cf9c9bd7a5950999909718a171d3e2c5fff70a91
 });
 
 postSchema.virtual('id').get(function() {
