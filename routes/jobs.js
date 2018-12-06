@@ -23,20 +23,6 @@ const postSchema = Joi.object().keys({
 });
 
 // unprotected endpoints
-app.get('/:id', (req, res, next) => {
-  const userId = req.params.id;
-  if(!mongoose.Types.ObjectId.isValid(userId)) {
-    const err = new Error('Path is not a valid user id');
-    return next(err);
-  }
-
-  return Post.find({userId})
-    .then(dbRes => {
-      return res.json(dbRes).status(200);
-    }).catch(err => {
-      return next(err);
-    });
-});
 
 
 
@@ -57,7 +43,7 @@ app.post('/:id', (req, res, next) => {
   console.log(typeof req.user);
 
   // FIXME: refactor into middleware
-  const requiredFields = ["title", "description"];
+  const requiredFields = ["title", "description", "date"];
   const missingField = requiredFields.find(field => !(field in req.body));
   if (missingField) {
     return res.status(422).json({
@@ -68,10 +54,15 @@ app.post('/:id', (req, res, next) => {
     });
   }
 
-  const {title, description} = req.body;
+  const {title, description, date} = req.body;
   const jobPostingData = {
+<<<<<<< HEAD
     userId, title, description, bids: [],
     accepted: false, acceptedUserId: null, completed: false
+=======
+    userId, title, description, date, bids: [],
+    accepted: false, acceptedUserId: null
+>>>>>>> cf9c9bd7a5950999909718a171d3e2c5fff70a91
   };
   const isValid = Joi.validate(jobPostingData, postSchema);
   if(!isValid) {
