@@ -1,21 +1,18 @@
 const express = require("express");
+const {requireFields} = require("../utils/validation");
+
 const User = require("../models/user");
 
 const router = express.Router();
 
-router.post("/", (req, res, next) => {
+const expectedFields = ["email", "password", "firstName", "lastName", "phoneNumber", "address", "type"];
+
+router.post("/", requireFields(expectedFields), (req, res, next) => {
   console.log(req.body);
   const { email, password } = req.body;
-  const requiredFields = ["email", "password", "firstName", "lastName", "phoneNumber", "address", "type"];
-  const missingField = requiredFields.find(field => !(field in req.body));
-  if (missingField) {
-    return res.status(422).json({
-      code: 422,
-      reason: "ValidationError",
-      message: "Missing Field",
-      location: missingField
-    });
-  }
+
+  // string fields
+
   const stringFields = ["email", "password"];
   const nonStringField = stringFields.find(
     field => field in req.body && typeof req.body[field] !== "string"
@@ -28,6 +25,8 @@ router.post("/", (req, res, next) => {
       location: nonStringField
     });
   }
+
+  // trimmed fields
 
   const explicityTrimmedFields = ["email", "password"];
   const nonTrimmedField = explicityTrimmedFields.find(
@@ -42,6 +41,8 @@ router.post("/", (req, res, next) => {
       location: nonTrimmedField
     });
   }
+
+  // joi validation
 
   const sizedFields = {
     email: {
