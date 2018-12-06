@@ -35,7 +35,7 @@ app.use(
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 
-app.use('/api/jobs', jobRouter); // unprotected endpoint
+app.use('/api/jobs', jobRouter); // partially unprotected endpoint
 app.use('/register', registerRouter);
 app.use('/login', authRouter);
 
@@ -44,7 +44,7 @@ app.use((err, req, res, next) => {
     const errBody = Object.assign({}, err, { message: err.message });
     res.status(err.status).json(errBody);
   } else {
-    res.status(500).json({ message: 'internal server error' });
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 

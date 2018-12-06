@@ -22,7 +22,7 @@ const postSchema = Joi.object().keys({
   description: Joi.string().alphanum().max(400),
 });
 
-// unprotected endpoint
+// unprotected endpoints
 app.get('/:id', (req, res, next) => {
   const userId = req.params.id;
   if(!mongoose.Types.ObjectId.isValid(userId)) {
@@ -38,6 +38,29 @@ app.get('/:id', (req, res, next) => {
     });
 });
 
+app.get('/:id', (req, res, next) => {
+  const userId = req.params.id;
+  if(!mongoose.Types.ObjectId.isValid(userId)) {
+    const err = new Error('Path is not a valid user id');
+    return next(err);
+  }
+
+  return Post.find({userId})
+    .then(dbRes => {
+      return res.json(dbRes).status(200);
+    }).catch(err => {
+      return next(err);
+    });
+});
+
+// just return all posts for now
+app.get('/', (req, res, next) => {
+  return Post.find()
+    .then(dbRes => res.json(dbRes))
+    .catch(err => next(err));
+});
+
+// protected
 app.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
 
 app.post('/:id', (req, res, next) => {
