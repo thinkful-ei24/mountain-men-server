@@ -6,7 +6,7 @@ const Joi = require('joi');
 const Post = require('../models/post');
 const User = require('../models/user');
 
-const app = express();
+const router = express.Router();
 
 // userId: {type: ObjectId, ref: 'User', required: true},
 // title: String,
@@ -24,7 +24,7 @@ const postSchema = Joi.object().keys({
 
 // unprotected endpoints
 
-app.get('/:id', (req, res, next) => {
+router.get('/:id', (req, res, next) => {
   const userId = req.params.id;
   if(!mongoose.Types.ObjectId.isValid(userId)) {
     const err = new Error('Path is not a valid user id');
@@ -40,20 +40,34 @@ app.get('/:id', (req, res, next) => {
 });
 
 // just return all posts for now
-app.get('/', (req, res, next) => {
+router.get('/', (req, res, next) => {
   return Post.find()
     .then(dbRes => res.json(dbRes))
     .catch(err => next(err));
 });
 
-// protected
-app.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
+// TODO: currently no guards when modifying whether a job post was accepted
+// (jobs accepted in the past can be unset, no account based validation, etc)
+router.put('/:id', (req, res, next) => {
+  const {id} = req.params;
+  const {accepted} = req.body;
+  return Post.findOneAndUpdate({_id: id}, {accepted}, {new: true})
+    .then(dbRes => {
+      if(!dbRes) {
+        const err = new Error('Could not find job board by id');
+        return next(err);
+      }
+      return res.json(dbRes);
+    })
+    .catch(err => next(err));
+});
 
-app.post('/:id', (req, res, next) => {
+// protected
+router.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
+
+router.post('/:id', (req, res, next) => {
   // FIXME: doesn't check to see if the user id matches the path id
   const userId = req.user.id;
-  console.log('req.user', req.user);
-  console.log(typeof req.user);
 
   // FIXME: refactor into middleware
   const requiredFields = ["title", "description", "date"];
@@ -89,4 +103,4 @@ app.post('/:id', (req, res, next) => {
     .catch(err => next(err));
 });
 
-module.exports = app;
+module.exports = router;
