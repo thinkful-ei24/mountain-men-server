@@ -1,46 +1,43 @@
 const express = require("express");
-const {requireFields} = require("../utils/validation");
+const {requireFields, trimmedFields} = require("../utils/validation");
+const Joi = require('joi');
 
 const User = require("../models/user");
 
 const router = express.Router();
 
-const expectedFields = ["email", "password", "firstName", "lastName", "phoneNumber", "address", "type"];
+const userSchema = Joi.object().keys({
+  email: Joi.string().email({minDomainAtoms: 1}),
+  password: Joi.string().min(6).max(72)
+});
 
-router.post("/", requireFields(expectedFields), (req, res, next) => {
-  console.log(req.body);
+const expectedFields = ["email", "password", "firstName", "lastName", "phoneNumber", "address", "type"];
+const explicityTrimmedFields = ["email", "password"];
+router.post("/", requireFields(expectedFields),
+  trimmedFields(explicityTrimmedFields), (req, res, next) => {
   const { email, password } = req.body;
+
+  const userData = {
+    email,
+    password: digest,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    phoneNumber: req.body.phoneNumber,
+    address: req.body.address,
+    type: req.body.type
+  };
+  const result = Joi.validate(userData, userSchema);
+  console.log(result);
 
   // string fields
 
-  const stringFields = ["email", "password"];
-  const nonStringField = stringFields.find(
-    field => field in req.body && typeof req.body[field] !== "string"
-  );
-  if (nonStringField) {
-    return res.status(422).json({
-      code: 422,
-      reason: "ValidationError",
-      message: "Incorrect field type: expected string",
-      location: nonStringField
-    });
-  }
-
-  // trimmed fields
-
-  const explicityTrimmedFields = ["email", "password"];
-  const nonTrimmedField = explicityTrimmedFields.find(
-    field => req.body[field].trim() !== req.body[field]
-  );
-
-  if (nonTrimmedField) {
-    return res.status(422).json({
-      code: 422,
-      reason: "ValidationError",
-      message: "Cannot start or end with whitespace",
-      location: nonTrimmedField
-    });
-  }
+  // if (nonStringField) {
+  //   return res.status(422).json({
+  //     code: 422,
+  //     reason: "ValidationError",
+  //     message: "Incorrect field type: expected string",
+  //     location: nonStringField
+  //   });
 
   // joi validation
 
@@ -79,6 +76,7 @@ router.post("/", requireFields(expectedFields), (req, res, next) => {
     });
   }
 
+  console.log('find user by email');
   return User.find({ email })
     .count()
     .then(count => {
@@ -94,13 +92,8 @@ router.post("/", requireFields(expectedFields), (req, res, next) => {
     })
     .then(digest => {
       return User.create({
-        email,
-        password: digest,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        phoneNumber: req.body.phoneNumber,
-        address: req.body.address,
-        type: req.body.type
+        ...userData,
+        password: digest
       });
     })
     .then(result => {
