@@ -79,7 +79,6 @@ app.post("/:id", (req, res, next) => {
     userId,
     title,
     description,
-    bids: [],
     accepted: false,
     acceptedUserId: null,
     completed: false,
@@ -105,6 +104,31 @@ app.post("/:id", (req, res, next) => {
         .json(dbRes);
     })
     .catch(err => next(err));
+});
+
+app.put("/:id", (req, res, next) => {
+  
+  const userId = req.params.id;
+  const newObj = {
+    completed: req.body.completed,
+    accepted: req.body.accepted,
+    acceptedUserId: req.body.acceptedUserId,
+    userId
+  };
+
+  console.log(userId, newObj)
+
+  return Post.findOneAndUpdate({ _id: userId, userId }, newObj, { new: true })
+    .then(results => {
+      console.log(results);
+      res.json(results);
+    })
+
+    .catch(err => {
+      console.error(`ERROR: ${err.message}`);
+      console.error(err);
+      next();
+    });
 });
 
 module.exports = app;
