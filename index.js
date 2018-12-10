@@ -13,6 +13,7 @@ const { dbConnect } = require('./db-mongoose');
 const authRouter = require('./routes/auth');
 const registerRouter = require('./routes/register');
 const jobRouter = require('./routes/jobs');
+const bidRouter = require('./routes/bids');
 
 require('dotenv').config;
 
@@ -35,7 +36,8 @@ app.use(
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 
-app.use('/api/jobs', jobRouter); // partially unprotected endpoint
+app.use('/api/jobs', jobRouter);
+app.use('/api/bids', bidRouter); 
 app.use('/register', registerRouter);
 app.use('/login', authRouter);
 
