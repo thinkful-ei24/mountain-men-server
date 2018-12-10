@@ -8,8 +8,6 @@ const User = require("../models/user");
 
 const app = express();
 
-
-
 // just return all posts for now
 app.get("/", (req, res, next) => {
   return Bid.find()
@@ -32,6 +30,22 @@ app.get('/:id', (req, res, next) => {
     });
 });
 
+//get post for count
+app.get('/:jobId', (req, res, next) => {
+  const jobId = req.params.jobId;
+  const userId = req.params.id;
+  if(!mongoose.Types.ObjectId.isValid(userId)) {
+    const err = new Error('Path is not a valid user id');
+    return next(err);
+  }
+   return Bid.find({userId, jobId})
+    .then(dbRes => {
+      return res.json(dbRes).status(200);
+    }).catch(err => {
+      return next(err);
+    });
+});
+
 app.use(
   "/",
   passport.authenticate("jwt", { session: false, failWithError: true })
@@ -40,7 +54,7 @@ app.use(
 app.post("/:id", (req, res, next) => {
   // FIXME: doesn't check to see if the user id matches the path id
   const userId = req.params.id;
-  
+
 
   // FIXME: refactor into middleware
   const requiredFields = ["jobId", "bidAmount", "bidDescription"];
