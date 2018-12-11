@@ -4,22 +4,28 @@ const User = require('../models/user');
 
 const router = express.Router();
 
-const jwtAuth = passport.authenticate('jwt', {session: false, failWithError: true});
-
+// public profile info
 router.get('/:id', (req, res, next) => {
   const {id} = req.params;
 
   User.findById(id)
     .then(dbRes => {
-      delete dbRes.address;
-      delete dbRes.phoneNumber;
-      delete dbRes.email;
-      res.json(dbRes);
+      const profileInfo = dbRes.toJSON();
+      delete profileInfo.address;
+      delete profileInfo.phoneNumber;
+      delete profileInfo.email;
+      delete profileInfo.id; // might as well
+      res.json(profileInfo);
     })
     .catch(err => {
       return next(err);
     });
 });
+
+router.use(
+  "/",
+  passport.authenticate("jwt", { session: false, failWithError: true })
+);
 
 // email: {type: String, required: true, unique: true},
 // password: {type: String, required: true},
