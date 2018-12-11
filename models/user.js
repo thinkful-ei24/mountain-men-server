@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.virtual('fullName').get(function() {
-  return this.first + ' ' + this.last;
+  return this.firstName + ' ' + this.lastName;
 });
 
 userSchema.virtual('id').get(function() {
