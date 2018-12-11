@@ -109,12 +109,16 @@ app.post("/:id", (req, res, next) => {
 app.put("/:userId/:jobId", (req, res, next) => {
   
   const {userId, jobId} = req.params;
-  const newObj = {
-    completed: req.body.completed,
-    // accepted: req.body.accepted,
-    // acceptedUserId: req.body.acceptedUserId,
-    // userId
-  };
+
+  const newObj = {};
+
+  if (req.body.accepted) {
+    newObj.accepted = true;
+  }
+  if (req.body.completed) {
+    newObj.completed = true;
+  }
+
 
   return Post.findOneAndUpdate({ _id: jobId, userId }, newObj, { new: true })
     .then(result => {
