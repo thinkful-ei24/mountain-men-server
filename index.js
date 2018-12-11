@@ -14,6 +14,7 @@ const authRouter = require('./routes/auth');
 const registerRouter = require('./routes/register');
 const jobRouter = require('./routes/jobs');
 const bidRouter = require('./routes/bids');
+const profileRouter = require('./routes/profile');
 
 require('dotenv').config;
 
@@ -38,6 +39,7 @@ passport.use(jwtStrategy);
 
 app.use('/api/jobs', jobRouter);
 app.use('/api/bids', bidRouter); 
+app.use('/api/profile', profileRouter);
 app.use('/register', registerRouter);
 app.use('/login', authRouter);
 
