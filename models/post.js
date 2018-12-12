@@ -10,11 +10,22 @@ const postSchema = new mongoose.Schema({
   accepted: {type: Boolean, default: false},
   acceptedUserId: {type: ObjectId, ref: 'User'},
   completed: { type: Boolean, default: false },
-  date: Date
+  date: Date,
+  location: {
+    city: String,
+    state: String,
+    zip: Number,
+    address: String
+  }
 });
 
 postSchema.virtual('id').get(function() {
   return this._id;
+});
+
+postSchema.virtual('mapsApiString').get(function() {
+  return this.location.address + ' ' + this.location.city
+    + ' ' + this.location.state + ' ' + this.location.zip;
 });
 
 postSchema.set("toJSON", {
@@ -23,8 +34,6 @@ postSchema.set("toJSON", {
   transform: (doc, ret) => {
     delete ret._id;
     delete ret.__v;
-    // FIXME:
-    delete ret.bids;
     return ret;
   }
 });
