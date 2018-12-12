@@ -53,7 +53,7 @@ app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
     err.status = 401;
     return next(err);
   }
-  console.log(req.body, req.user, req.params);
+
   // shouldn't have to look up the user id in the db because it's matched against auth
   return Joi.validate(req.body, postSchema)
     .then(obj => {
@@ -63,7 +63,13 @@ app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
         date: obj.date,
         userId: req.user.id,
         accepted: false,
-        acceptedUserId: null
+        acceptedUserId: null,
+        location: {
+          city: 'Portland',
+          state: 'OR',
+          zip: '97214',
+          address: '607 SE Morrison'
+        }
       };
       return Post.create(postData);
     })
