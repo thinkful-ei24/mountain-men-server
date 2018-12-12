@@ -48,6 +48,7 @@ app.use(
 const jobPostFields = ["title", "description", "date"];
 app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
   const userId = req.user.id;
+  console.log(req.user, req.body);
 
   if(userId !== req.params.id) {
     const err = new Error('Unauthorized to post a job for this user');
@@ -57,19 +58,19 @@ app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
 
   // shouldn't have to look up the user id in the db because it's matched against auth
   return Joi.validate(req.body, postSchema)
-    .this(obj => {
+    .then(obj => {
       const postData = {
         title: obj.title,
         description: obj.description,
         date: obj.date,
         userId,
-        bids: [],
         accepted: false,
         acceptedUserId: null
       };
       return Post.create(postData);
     })
     .catch(joiError => next(formatValidateError(joiError)))
+    
     .then(dbRes => {
       return res
         .location(`${req.originalUrl}/${dbRes.id}`)

@@ -6,4 +6,4 @@ const formatValidateError = (joiError) => {
   return err;
 };
 
-module.exports = formatValidateError;
+module.exports = { formatValidateError };

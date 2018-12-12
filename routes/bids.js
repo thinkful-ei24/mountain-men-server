@@ -53,7 +53,8 @@ app.use(
 
 app.post("/:id", (req, res, next) => {
   // FIXME: doesn't check to see if the user id matches the path id
-  const userId = req.params.id;
+  const userId = req.user.id;
+  console.log(req.body, req.user.id);
 
 
   // FIXME: refactor into middleware
