@@ -12,9 +12,8 @@ const app = express();
 // description ok as alphanumeric?
 const postSchema = Joi.object().keys({
   title: Joi.string().min(3).max(40).required(),
-  description: Joi.string().alphanum().max(400),
-  date: Joi.string(),
-  id: Joi.string()
+  description: Joi.string().max(400),
+  date: Joi.string()
 });
 
 // unprotected endpoints
@@ -54,7 +53,7 @@ app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
     err.status = 401;
     return next(err);
   }
-
+  console.log(req.body, req.user, req.params);
   // shouldn't have to look up the user id in the db because it's matched against auth
   return Joi.validate(req.body, postSchema)
     .then(obj => {
@@ -69,13 +68,14 @@ app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
       return Post.create(postData);
     })
     .catch(joiError => next(formatValidateError(joiError)))
-    
     .then(dbRes => {
+      console.log(dbRes, 'dbRes');
       return res
         .location(`${req.originalUrl}/${dbRes.id}`)
         .status(201)
         .json(dbRes);
     })
+    
     .catch(err => next(err));
 });
 
