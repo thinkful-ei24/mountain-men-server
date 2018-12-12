@@ -1,5 +1,6 @@
 const express = require("express");
 const {requireFields, trimmedFields} = require("../utils/validation");
+const {formatValidateError} = require('../utils/validate-normalize');
 const Joi = require('joi');
 
 const User = require("../models/user");
@@ -29,13 +30,7 @@ router.post("/", requireFields(expectedFields),
     .then(validatedObj => {
       userData = validatedObj;
     })
-    .catch(joiError => {
-      const err = new Error(joiError.message);
-      err.reason = "ValidationError";
-      err.status = 422;
-      console.log(req.body);
-      return next(err);
-    })
+    .catch(joiError => next(formatValidateError(joiError)))
     .then(() => User.hashPassword(userData.password))
     .then(digest => {
       return User.create({

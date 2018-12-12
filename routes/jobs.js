@@ -4,23 +4,17 @@ const mongoose = require('mongoose');
 const Joi = require('joi');
 
 const {requireFields} = require('../utils/validation');
+const {formatValidateError} = require('../utils/validate-normalize');
 const Post = require('../models/post');
 const User = require('../models/user');
 
 const app = express();
 
-// userId: {type: ObjectId, ref: 'User', required: true},
-// title: String,
-// rating: Number,
-// description: String,
-// bids: [{type: ObjectId, ref: 'User'}],
-// accepted: {type: Boolean, default: false},
-// acceptedUserId: {type: ObjectId, ref: 'User'}
-
 // description ok as alphanumeric?
 const postSchema = Joi.object().keys({
   title: Joi.string().min(3).max(40).required(),
   description: Joi.string().alphanum().max(400),
+  date: Joi.string()
 });
 
 // unprotected endpoints
@@ -52,29 +46,31 @@ app.use('/', passport.authenticate('jwt', { session: false, failWithError: true 
 
 const jobPostFields = ["title", "description", "date"];
 app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
-  // FIXME: doesn't check to see if the user id matches the path id
   const userId = req.user.id;
-  console.log('req.user', req.user);
-  console.log(typeof req.user);
-
-  // FIXME: refactor into middleware
-  const requiredFields = ;
-  const missingField = requiredFields.find(field => !(field in req.body));
-  if (missingField) {
-    return res.status(422).json({
-      code: 422,
-      reason: "ValidationError",
-      message: "Missing Field",
-      location: missingField
-    });
+  // not really that necessary...
+  if(userId !== req.params.id) {
+    const err = new Error('Unauthorized to post a job for this user');
+    err.status = 401;
+    return next(err);
   }
 
   const {title, description, date} = req.body;
-  const jobPostingData = {
-    userId, title, description, date, bids: [],
-    accepted: false, acceptedUserId: null
-  };
-  const isValid = Joi.validate(jobPostingData, postSchema);
+
+  return Joi.validate(req.body, postSchema)
+    .this(obj => {
+      const jobPostingData = {
+        title: obj.title,
+        description: obj.description,
+        date: obj.date,
+        userId,
+        bids: [],
+        accepted: false,
+        acceptedUserId: null
+      };
+    })
+    .catch(joiError => next(formatValidateError(joiError)))
+    })
+
   if(!isValid) {
     const err = new Error('Failed to validate input data. Make sure that the data fits validation requirements');
     return next(err);
