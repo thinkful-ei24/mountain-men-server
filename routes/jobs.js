@@ -92,6 +92,10 @@ app.put("/:userId/:jobId", (req, res, next) => {
     newObj.completed = true;
   }
 
+  if (req.body.acceptedUserId) {
+    newObj.acceptedUserId = req.body.acceptedUserId;
+  }
+
 
   return Post.findOneAndUpdate({ _id: jobId, userId }, newObj, { new: true })
     .then(result => {
