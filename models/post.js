@@ -7,9 +7,9 @@ const postSchema = new mongoose.Schema({
   title: String,
   rating: Number,
   description: String,
-  bids: [{type: ObjectId, ref: 'User'}],
   accepted: {type: Boolean, default: false},
   acceptedUserId: {type: ObjectId, ref: 'User'},
+  completed: { type: Boolean, default: false },
   date: Date
 });
 
