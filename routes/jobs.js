@@ -3,6 +3,7 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const Joi = require('joi');
 
+const {requireFields} = require('../utils/validation');
 const Post = require('../models/post');
 const User = require('../models/user');
 
@@ -49,14 +50,15 @@ app.get('/', (req, res, next) => {
 // protected
 app.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
 
-app.post('/:id', (req, res, next) => {
+const jobPostFields = ["title", "description", "date"];
+app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
   // FIXME: doesn't check to see if the user id matches the path id
   const userId = req.user.id;
   console.log('req.user', req.user);
   console.log(typeof req.user);
 
   // FIXME: refactor into middleware
-  const requiredFields = ["title", "description", "date"];
+  const requiredFields = ;
   const missingField = requiredFields.find(field => !(field in req.body));
   if (missingField) {
     return res.status(422).json({
