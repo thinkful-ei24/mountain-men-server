@@ -13,7 +13,8 @@ const app = express();
 const postSchema = Joi.object().keys({
   title: Joi.string().min(3).max(40).required(),
   description: Joi.string().alphanum().max(400),
-  date: Joi.string()
+  date: Joi.string(),
+  id: Joi.string()
 });
 
 // unprotected endpoints
@@ -32,7 +33,7 @@ app.get('/:id', (req, res, next) => {
     const err = new Error('Path is not a valid user id');
     return next(err);
   }
-   return Post.find({userId})
+  return Post.find({userId})
     .then(dbRes => {
       return res.json(dbRes).status(200);
     }).catch(err => {
@@ -47,10 +48,8 @@ app.use(
 
 const jobPostFields = ["title", "description", "date"];
 app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
-  const userId = req.user.id;
-  console.log(req.user, req.body);
 
-  if(userId !== req.params.id) {
+  if(req.user.id !== req.params.id) {
     const err = new Error('Unauthorized to post a job for this user');
     err.status = 401;
     return next(err);
@@ -63,7 +62,7 @@ app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
         title: obj.title,
         description: obj.description,
         date: obj.date,
-        userId,
+        userId: req.user.id,
         accepted: false,
         acceptedUserId: null
       };
