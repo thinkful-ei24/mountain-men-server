@@ -6,7 +6,6 @@ const Joi = require('joi');
 const {requireFields} = require('../utils/validation');
 const {formatValidateError} = require('../utils/validate-normalize');
 const Post = require('../models/post');
-const User = require('../models/user');
 
 const app = express();
 
@@ -47,18 +46,17 @@ app.use('/', passport.authenticate('jwt', { session: false, failWithError: true 
 const jobPostFields = ["title", "description", "date"];
 app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
   const userId = req.user.id;
-  // not really that necessary...
+
   if(userId !== req.params.id) {
     const err = new Error('Unauthorized to post a job for this user');
     err.status = 401;
     return next(err);
   }
 
-  const {title, description, date} = req.body;
-
+  // shouldn't have to look up the user id in the db because it's matched against auth
   return Joi.validate(req.body, postSchema)
     .this(obj => {
-      const jobPostingData = {
+      const postData = {
         title: obj.title,
         description: obj.description,
         date: obj.date,
@@ -67,20 +65,9 @@ app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
         accepted: false,
         acceptedUserId: null
       };
+      return Post.create(postData);
     })
     .catch(joiError => next(formatValidateError(joiError)))
-    })
-
-  if(!isValid) {
-    const err = new Error('Failed to validate input data. Make sure that the data fits validation requirements');
-    return next(err);
-  }
-
-  return User.findById(userId)
-    .catch(err => next(err))
-    .then(() => {
-      return Post.create(jobPostingData);
-    })
     .then(dbRes => {
       return res.location(`${req.originalUrl}/${dbRes.id}`).status(201).json(dbRes);
     })

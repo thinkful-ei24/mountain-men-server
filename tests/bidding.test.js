@@ -41,6 +41,9 @@ describe('Posting job requests and bidding') {
   it('should not allow multiple bids to be posted on the same job') {
 
   }
+  it('should not allow users to post jobs on behalf of other users') {
+    
+  }
 }
 
 describe('Mocha and Chai', function() {

@@ -29,9 +29,9 @@ router.post("/", requireFields(expectedFields),
   return Joi.validate(req.body, userSchema, {abortEarly: true})
     .then(validatedObj => {
       userData = validatedObj;
+      return User.hashPassword(userData.password);
     })
     .catch(joiError => next(formatValidateError(joiError)))
-    .then(() => User.hashPassword(userData.password))
     .then(digest => {
       return User.create({
         ...userData,
