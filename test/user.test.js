@@ -16,7 +16,7 @@ process.stdout.write('\x1Bc\n');
 const expect = chai.expect;
 chai.use(chaiHttp);
 
-describe('Posting job requests and bidding') {
+describe('User and profile endpoints', function() {
 
   before(function() {
     return dbConnect(TEST_DATABASE_URL);
@@ -26,25 +26,25 @@ describe('Posting job requests and bidding') {
     return dbDisconnect();
   });
 
-  it('should create an empty job posting') {
+  it('should create a new account when given valid credentials', function() {
 
-  }
-  it('should fail to create a job posting if fields are missing or invalid') {
+  });
+  it('should fail to create an account when some fields are missing', function() {
 
-  }
-  it('should add a bid to a posting if the bid is valid') {
+  });
+  it('should fail to create an account when an email address is already in use', function() {
 
-  }
-  it('should not add a bid if it is not valid') {
+  });
+  it('should change user profile information given all the required fields', function() {
 
-  }
-  it('should not allow multiple bids to be posted on the same job') {
+  });
+  it('should not modify user profile settings if fields are missing', function() {
 
-  }
-  it('should not allow users to post jobs on behalf of other users') {
+  });
+  it('should only show the personal details of the user, not other accounts', function() {
     
-  }
-}
+  });
+},
 
 describe('Mocha and Chai', function() {
   it('should be properly setup', function() {
