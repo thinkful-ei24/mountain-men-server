@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "mocha": "mocha --exit --file test/setup.test.js '!(node_modules)/**/*test.js'",
-    "mocha-exit0": "mocha --exit --file test/setup.test.js '!(node_modules)/**/*test.js' || true",
-    "test": "nodemon --exec npm run mocha-exit0",
+    "test": "cross-env NODE_ENV=test mocha --file test/setup.test.js --timeout 5000",
     "cover": "nodemon --exec nyc --reporter=lcov --reporter=text-summary npm run mocha-exit0",
     "heroku": "node index.js",
     "travis": "npm run mocha"
