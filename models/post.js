@@ -11,15 +11,9 @@ const postSchema = new mongoose.Schema({
   acceptedUserId: {type: ObjectId, ref: 'User'},
   completed: { type: Boolean, default: false },
   date: Date,
-  location: {
-    city: String,
-    state: String,
-    zip: Number,
-    address: String,
-    coords: {
-      lat: Number,
-      long: Number
-    }
+  coords: {
+    lat: Number,
+    long: Number
   }
 });
 

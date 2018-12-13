@@ -8,6 +8,7 @@ const {GEOCODE_URL} = require('../config');
 const {requireFields} = require('../utils/validation');
 const {formatValidateError} = require('../utils/validate-normalize');
 const Post = require('../models/post');
+const User = require('../models/user');
 
 const app = express();
 
@@ -47,7 +48,7 @@ app.use(
   passport.authenticate("jwt", { session: false, failWithError: true })
 );
 
-const jobPostFields = ["title", "description", "date"];
+const jobPostFields = ["title", "description", "date", "city", "state", "zip", "address"];
 app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
 
   if(req.user.id !== req.params.id) {
@@ -66,19 +67,13 @@ app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
         date: obj.date,
         userId: req.user.id,
         accepted: false,
-        acceptedUserId: null,
-        location: {
-          city: 'Portland',
-          state: 'OR',
-          zip: '97214',
-          address: '607 SE Morrison'
-        }
+        acceptedUserId: null
       };
     })
     .catch(joiError => next(formatValidateError(joiError)))
     // get latitude and longitude from maps api
     .then(() => {
-      const {city, state, zip, address} = postData.location;
+      const {city, state, zip, address} = req.body;
       const geocodeStr = encodeURI(address + ' ' + city + ' ' + state + ' ' + zip);
       return axios.get(GEOCODE_URL, {
         params: {
@@ -90,7 +85,7 @@ app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
     // create post
     .then(res => {
       const {lat, lng} = res.data.results[0].geometry.location;
-      postData.location.coords = {lat, lng};
+      postData.coords = {lat, lng};
       return Post.create(postData);
     })
     // send post
