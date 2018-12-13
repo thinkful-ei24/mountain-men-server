@@ -26,11 +26,28 @@ describe('Posting job requests and bidding', function() {
     return dbDisconnect();
   });
 
-  // TODO: beforeEach, afterEach
-  
+  // beforeEach(function () {
+  //   // sandbox
+  //   return Promise.all([
+  //     // insertMany
+  //   ])
+  //     .then(res => {
+  //       console.log(res);
+  //       // user = users[0];
+  //       // token = jwt.sign({user}, JWT_SECRET, {subject: user.username});
+  //     });
+  // });
+
+  // afterEach(function () {
+  //   // sandbox.restore();
+  //   return Promise.all([
+  //     // deleteMany
+  //   ]);
+  // });
+
   describe('POST /api/jobs/userId', function() {
-    it.only('should create an empty job posting for a particular user', function() {
-      expect(true).to.be.true;
+    it('should create an empty job posting for a particular user', function() {
+
     });
     it('should fail to create a job posting if fields are missing or invalid', function() {
   
