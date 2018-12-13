@@ -1,8 +1,10 @@
 const express = require("express");
 const passport = require("passport");
 const mongoose = require("mongoose");
+const axios = require('axios');
 const Joi = require("joi");
 
+const {GEOCODE_URL} = require('../config');
 const {requireFields} = require('../utils/validation');
 const {formatValidateError} = require('../utils/validate-normalize');
 const Post = require('../models/post');
@@ -54,10 +56,11 @@ app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
     return next(err);
   }
 
+  let postData;
   // shouldn't have to look up the user id in the db because it's matched against auth
   return Joi.validate(req.body, postSchema)
     .then(obj => {
-      const postData = {
+      postData = {
         title: obj.title,
         description: obj.description,
         date: obj.date,
@@ -71,17 +74,32 @@ app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
           address: '607 SE Morrison'
         }
       };
-      return Post.create(postData);
     })
     .catch(joiError => next(formatValidateError(joiError)))
+    // get latitude and longitude from maps api
+    .then(() => {
+      const {city, state, zip, address} = postData.location;
+      const geocodeStr = encodeURI(address + ' ' + city + ' ' + state + ' ' + zip);
+      return axios.get(GEOCODE_URL, {
+        params: {
+          address: geocodeStr,
+          key: process.env.MAPS_API_KEY
+        }
+      });
+    })
+    // create post
+    .then(res => {
+      const {lat, lng} = res.data.results[0].geometry.location;
+      postData.location.coords = {lat, lng};
+      return Post.create(postData);
+    })
+    // send post
     .then(dbRes => {
-      console.log(dbRes, 'dbRes');
       return res
         .location(`${req.originalUrl}/${dbRes.id}`)
         .status(201)
         .json(dbRes);
     })
-    
     .catch(err => next(err));
 });
 

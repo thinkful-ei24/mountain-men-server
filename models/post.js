@@ -15,17 +15,16 @@ const postSchema = new mongoose.Schema({
     city: String,
     state: String,
     zip: Number,
-    address: String
+    address: String,
+    coords: {
+      lat: Number,
+      long: Number
+    }
   }
 });
 
 postSchema.virtual('id').get(function() {
   return this._id;
-});
-
-postSchema.virtual('mapsApiString').get(function() {
-  return this.location.address + ' ' + this.location.city
-    + ' ' + this.location.state + ' ' + this.location.zip;
 });
 
 postSchema.set("toJSON", {
