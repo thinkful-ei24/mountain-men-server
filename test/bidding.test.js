@@ -26,26 +26,37 @@ describe('Posting job requests and bidding', function() {
     return dbDisconnect();
   });
 
-  it('should create an empty job posting', function() {
-
-  });
-  it('should fail to create a job posting if fields are missing or invalid', function() {
-
-  });
-  it('should add a bid to a posting if the bid is valid', function() {
-
-  });
-  it('should not add a bid if it is not valid', function() {
-
-  });
-  it('should not allow multiple bids to be posted on the same job', function() {
-
-  });
-  it('should not allow users to post jobs on behalf of other users', function() {
+  // TODO: beforeEach, afterEach
+  
+  describe('POST /api/jobs/userId', function() {
+    it.only('should create an empty job posting for a particular user', function() {
+      expect(true).to.be.true;
+    });
+    it('should fail to create a job posting if fields are missing or invalid', function() {
+  
+    });
+    it('should not allow users to post jobs on behalf of other users', function() {
     
+    });
   });
-  it('should allow a bid to be modified, as long as the new bid is higher', function() {
-    
+
+  describe('POST /api/bids/jobId', function() {
+    it('should add a bid to a posting if the bid is valid', function() {
+
+    });
+    it('should not add a bid if it is not valid', function() {
+  
+    });
+    it('should not allow multiple bids to be posted on the same job', function() {
+  
+    });
+  });
+
+  // not implemented yet
+  describe.skip('PUT /api/bids/bidId', function() {
+    it('should allow a bid to be modified, as long as the new bid is higher', function() {
+      
+    });
   });
 });
 

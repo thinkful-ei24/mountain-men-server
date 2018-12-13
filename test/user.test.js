@@ -26,25 +26,38 @@ describe('User and profile endpoints', function() {
     return dbDisconnect();
   });
 
-  it('should create a new account when given valid credentials', function() {
+  // TODO: beforeEach, afterEach
 
+  describe('POST /register', function() {
+    it.only('should create a new account when given valid credentials', function() {
+      expect(true).to.be.true;
+    });
+    it('should fail to create an account when some fields are missing', function() {
+  
+    });
+    it('should fail to create an account when an email address is already in use', function() {
+  
+    });
   });
-  it('should fail to create an account when some fields are missing', function() {
 
-  });
-  it('should fail to create an account when an email address is already in use', function() {
+  describe('PUT /api/profile', function() {
+    it('should change user profile information given all the required fields', function() {
 
+    });
+    it('should not modify user profile settings if fields are missing', function() {
+  
+    });
   });
-  it('should change user profile information given all the required fields', function() {
 
-  });
-  it('should not modify user profile settings if fields are missing', function() {
+  describe('GET /api/profile', function() {
+    it('should show a limited amount of data for all user accounts', function() {
 
+    });
+    it('should only show personal information for the authorized user, not other accounts', function() {
+      
+    });
   });
-  it('should only show the personal details of the user, not other accounts', function() {
-    
-  });
-},
+});
 
 describe('Mocha and Chai', function() {
   it('should be properly setup', function() {
