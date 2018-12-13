@@ -84,7 +84,7 @@ app.post("/:id", requireFields(jobPostFields), (req, res, next) => {
       }
     })
     .then(apiRes => {
-      console.log('here')
+      console.log(apiRes.data);
       const { lat, lng } = apiRes.data.results[0].geometry.location;
       postData.coords = { lat, lng };
 
