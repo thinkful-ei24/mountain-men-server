@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema({
   firstName: {type: String, required: true},
   lastName: {type: String, required: true},
   phoneNumber: {type: String, required: true},
-  address: {type: String, required: true},
   type: {type: String, enum: ['DRIVER', 'USER'], default: 'USER', required: true}
 });
 
