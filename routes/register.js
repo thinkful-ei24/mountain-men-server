@@ -30,7 +30,7 @@ router.post("/", requireFields(expectedFields),
 
     let userData = {
       email: req.body.email,
-      password: req.body.email,
+      password: req.body.password,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       phoneNumber: req.body.phoneNumber,
