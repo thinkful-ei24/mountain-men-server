@@ -13,8 +13,8 @@ router.get('/:id', (req, res, next) => {
     .then(dbRes => {
       const profileInfo = dbRes.toJSON();
       delete profileInfo.address;
-      delete profileInfo.phoneNumber;
-      delete profileInfo.email;
+      // delete profileInfo.phoneNumber;
+      // delete profileInfo.email;
       // TODO: delete new location information once it's set in user
       res.json(profileInfo);
     })
