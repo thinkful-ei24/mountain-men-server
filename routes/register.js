@@ -16,10 +16,11 @@ const userSchema = Joi.object().keys({
   firstName: Joi.string(),
   lastName: Joi.string(),
   phoneNumber: Joi.number(),
-  type: Joi.string()
+  type: Joi.string(),
+  address: Joi.object().pattern(/.*/, [Joi.string(), Joi.string(), Joi.string(), Joi.string()])
 });
 
-const expectedFields = ["email", "password", "firstName", "lastName", "phoneNumber", "type"];
+const expectedFields = ["email", "password", "firstName", "lastName", "phoneNumber", "type", "address"];
 const explicityTrimmedFields = ["email", "password"];
 router.post("/", requireFields(expectedFields),
   trimmedFields(explicityTrimmedFields), (req, res, next) => {
