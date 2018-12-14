@@ -11,6 +11,7 @@ const postSchema = new mongoose.Schema({
   acceptedUserId: {type: ObjectId, ref: 'User'},
   completed: { type: Boolean, default: false },
   date: Date,
+  budget: String,
   coords: {
     lat: String,
     long: String
