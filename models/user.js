@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema({
     state: {type: String},
     zip: {type: String},
   },
+  coords: {
+    lat: String,
+    lng: String
+  },
   type: {type: String, enum: ['DRIVER', 'USER'], default: 'USER', required: true}
 });
 
