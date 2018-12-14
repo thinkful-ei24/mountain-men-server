@@ -30,12 +30,15 @@ router.use(
 
 const reqProfileFields = ['email', 'firstName', 'lastName', 'phoneNumber', 'address', 'type'];
 router.put('/:id', requireFields(reqProfileFields), (req, res, next) => {
+  console.log('hello');
   const {id: userId} = req.user;
   const {email, firstName, lastName, phoneNumber, address, type} = req.body;
 
   const updatedObject = {
     email, firstName, lastName, phoneNumber, address, type
   };
+
+  console.log(updatedObject);
 
   if(userId !== req.params.id) {
     const err = new Error('Unauthorized to edit this profile');

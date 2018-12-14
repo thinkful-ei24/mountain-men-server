@@ -20,6 +20,7 @@ const postSchema = Joi.object().keys({
     .required(),
   description: Joi.string().max(400),
   date: Joi.string(),
+  budget: Joi.string(),
   city: Joi.string(),
   state: Joi.string(),
   street: Joi.string(),
@@ -60,7 +61,7 @@ app.use(
   passport.authenticate("jwt", { session: false, failWithError: true })
 );
 
-const jobPostFields = ["title", "description", "date", "city", "state", "zipCode", "street"];
+const jobPostFields = ["title", "description", "date", 'budget', "city", "state", "zipCode", "street"];
 app.post("/:id", requireFields(jobPostFields), (req, res, next) => {
   if (req.user.id !== req.params.id) {
     const err = new Error("Unauthorized to post a job for this user");
@@ -72,6 +73,7 @@ app.post("/:id", requireFields(jobPostFields), (req, res, next) => {
     title: req.body.title,
     description: req.body.description,
     date: req.body.date,
+    budget: req.body.budget,
     userId: req.user.id,
     accepted: false,
     acceptedUserId: 'string'
@@ -92,6 +94,7 @@ app.post("/:id", requireFields(jobPostFields), (req, res, next) => {
       // shouldn't have to look up the user id in the db because it's matched against auth
       Joi.validate(postData, postSchema)
         .then(() => {
+          console.log(postData);
           return Post.create(postData);
         })
         .then(dbRes => {
