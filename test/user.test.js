@@ -32,29 +32,29 @@ describe('User and profile endpoints', function() {
 
   // TODO: add data for testing
 
-  // beforeEach(function () {
-  //   // sandbox
-  //   return Promise.all([
-  //     // insertMany
-  //   ])
-  //     .then(res => {
-  //       console.log(res);
-  //       // user = users[0];
-  //       // token = jwt.sign({user}, JWT_SECRET, {subject: user.username});
-  //     });
-  // });
+  beforeEach(function () {
+    // sandbox
+    return Promise.all([
+      User.insertMany(users)
+    ])
+      .then(res => {
+        console.log(res);
+        user = users[0];
+        // token = jwt.sign({user}, JWT_SECRET, {subject: user.username});
+      });
+  });
 
   afterEach(function () {
     // sandbox.restore();
     return Promise.all([
-      // deleteMany
+      User.deleteMany()
     ]);
   });
 
   describe.only('POST /register', function() {
-    it.only('should create a new account when given valid credentials', function() {
+    it('should create a new account when given valid credentials', function() {
       const data = {
-        email: 'testaccount549@email.com',
+        email: 'testaccount@email.com',
         password: 'passwordwithmorethansixcharacters',
         firstName: 'foo',
         lastName: 'bar',
@@ -66,27 +66,76 @@ describe('User and profile endpoints', function() {
         .post('/register')
         .send(data)
         .then(res => {
-          console.log(res);
           expect(res).to.have.status(201);
           expect(res).to.have.header('location');
           expect(res).to.be.json;
           expect(res.body).to.be.an('object');
-          // expect(res.body).to.have.all.keys('id', 'title', 'content', 'createdAt', 'updatedAt', 'tags', 'folderId', 'userId');
+          expect(res.body).to.have.all.keys('type', 'email', 'firstName', 'lastName', 'phoneNumber', 'address', 'fullName', 'id');
         });
     });
 
     it('should fail to create an account when some fields are missing', function() {
-      
+      const data = {
+        email: 'invalidaccount@email.com',
+        password: 'passwordwithmorethansixcharacters',
+        firstName: 'foo',
+        lastName: 'bar',
+        phoneNumber: '7777777'
+      };
+      return chai.request(app)
+        .post('/register')
+        .send(data)
+        .then(res => {
+          expect(res).to.have.status(422);
+          expect(res).to.be.json;
+        });
     });
 
-    it('should fail to create an account when an email address is already in use', function() {
-  
+    it.only('should fail to create an account when an email address is already in use', function() {
+      const firstAccount = {
+        email: 'duplicateaccount@email.com',
+        password: 'passwordwithmorethansixcharacters',
+        firstName: 'foo',
+        lastName: 'bar',
+        phoneNumber: '7777777',
+        address: '101 Bot Drive',
+        type: 'DRIVER'
+      };
+      const secondAccount = {
+        email: 'duplicateaccount@email.com',
+        password: 'passwordwithmorethansixcharacters',
+        firstName: 'john',
+        lastName: 'doe',
+        phoneNumber: '0123456',
+        address: '102 Bot Drive',
+        type: 'DRIVER'
+      };
+      return chai.request(app)
+        .post('/register')
+        .send(firstAccount)
+        .then(res => {
+          expect(res).to.have.status(201);
+          expect(res).to.be.json;
+          expect(res).to.have.header('location');
+          return chai.request(app).post('/register').send(secondAccount);
+        })
+        .then(res => {
+          expect(res).to.have.status(400);
+        });
     });
   });
 
   describe('PUT /api/profile', function() {
     it('should change user profile information given all the required fields', function() {
-
+      const data = {
+        email: 'testaccount@email.com',
+        password: 'passwordwithmorethansixcharacters',
+        firstName: 'foo',
+        lastName: 'bar',
+        phoneNumber: '7777777',
+        address: '101 Bot Drive',
+        type: 'DRIVER'
+      };
     });
 
     it('should not modify user profile settings if fields are missing', function() {

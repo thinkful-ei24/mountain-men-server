@@ -9,7 +9,6 @@ function dbConnect(dbName = DATABASE_NAME, url = DATABASE_URL) {
   if(!dbName) {
     throw Error('No database name specified');
   }
-  console.log(dbName);
   return mongoose.connect(url, {dbName})
     .catch(err => {
       console.error('Mongoose failed to connect');
