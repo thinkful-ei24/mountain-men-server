@@ -16,7 +16,11 @@ const app = express();
 const postSchema = Joi.object().keys({
   title: Joi.string().min(3).max(40).required(),
   description: Joi.string().max(400),
-  date: Joi.string()
+  date: Joi.string(),
+  city: Joi.string(),
+  state: Joi.string(),
+  address: Joi.string(),
+  zip: Joi.number()
 });
 
 // unprotected endpoints
@@ -85,7 +89,7 @@ app.post('/:id', requireFields(jobPostFields), (req, res, next) => {
     // create post
     .then(res => {
       const {lat, lng} = res.data.results[0].geometry.location;
-      postData.coords = {lat, lng};
+      postData.coords = {lat, long: lng};
       return Post.create(postData);
     })
     // send post
