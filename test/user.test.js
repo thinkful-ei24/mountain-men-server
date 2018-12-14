@@ -7,6 +7,7 @@ const chaiHttp = require('chai-http');
 const User = require('../models/user');
 const {TEST_DATABASE_NAME} = require('../config');
 const {dbConnect, dbDisconnect} = require('../db-mongoose');
+const users = require('../seed-data/users');
 
 // Set NODE_ENV to `test` to disable http layer logs
 // You can do this in the command line, but this is cross-platform
@@ -32,6 +33,8 @@ describe('User and profile endpoints', function() {
 
   // TODO: add data for testing
 
+  let user;
+
   beforeEach(function () {
     // sandbox
     return Promise.all([
@@ -40,6 +43,7 @@ describe('User and profile endpoints', function() {
       .then(res => {
         console.log(res);
         user = users[0];
+        console.log(user);
         // token = jwt.sign({user}, JWT_SECRET, {subject: user.username});
       });
   });
