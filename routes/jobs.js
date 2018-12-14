@@ -20,6 +20,10 @@ const postSchema = Joi.object().keys({
     .required(),
   description: Joi.string().max(400),
   date: Joi.string(),
+  city: Joi.string(),
+  state: Joi.string(),
+  street: Joi.string(),
+  zipCode: Joi.number(),
   userId: Joi.string(),
   accepted: Joi.boolean(),
   acceptedUserId: Joi.string(),
@@ -56,7 +60,7 @@ app.use(
   passport.authenticate("jwt", { session: false, failWithError: true })
 );
 
-const jobPostFields = ["title", "description", "date"];
+const jobPostFields = ["title", "description", "date", "city", "state", "zipCode", "street"];
 app.post("/:id", requireFields(jobPostFields), (req, res, next) => {
   if (req.user.id !== req.params.id) {
     const err = new Error("Unauthorized to post a job for this user");
@@ -75,7 +79,6 @@ app.post("/:id", requireFields(jobPostFields), (req, res, next) => {
 
   const { city, state, zipCode, street } = req.body;
   const geocodeStr = street + " " + city + " " + state + " " + zipCode;
-  console.log(geocodeStr, postData);
   axios
     .get(GEOCODE_URL, {
       params: {
@@ -84,14 +87,11 @@ app.post("/:id", requireFields(jobPostFields), (req, res, next) => {
       }
     })
     .then(apiRes => {
-      console.log(apiRes.data);
       const { lat, lng } = apiRes.data.results[0].geometry.location;
-      postData.coords = { lat, lng };
-
+      postData.coords = { lat, long: lng };
       // shouldn't have to look up the user id in the db because it's matched against auth
       Joi.validate(postData, postSchema)
         .then(() => {
-          console.log(postData);
           return Post.create(postData);
         })
         .then(dbRes => {
@@ -101,20 +101,23 @@ app.post("/:id", requireFields(jobPostFields), (req, res, next) => {
             .json(dbRes);
         })
         .catch(joiError => {
-          console.log("joi", joiError);
           next(formatValidateError(joiError));
         });
       // get latitude and longitude from maps api
     })
-
-    .catch(err => {
-      console.log("error", err);
-      next(err);
-    });
+    .catch(err => next(err));
 });
 
+// TODO: no restrictions on type, limited userId restrictions (add "account only" middleware for userId auth)
+// ObjectId middleware? may not be necessary
 app.put("/:userId/:jobId", (req, res, next) => {
   const { userId, jobId } = req.params;
+
+  if(!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(jobId)) {
+    const err = new Error('Path is not a valid user id');
+    err.status = 404;
+    return next(err);
+  }
 
   const newObj = {};
 
@@ -133,12 +136,7 @@ app.put("/:userId/:jobId", (req, res, next) => {
     .then(result => {
       res.json(result);
     })
-
-    .catch(err => {
-      console.error(`ERROR: ${err.message}`);
-      console.error(err);
-      next();
-    });
+    .catch(err => next(err));
 });
 
 module.exports = app;

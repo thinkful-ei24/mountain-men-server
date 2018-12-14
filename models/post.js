@@ -12,8 +12,8 @@ const postSchema = new mongoose.Schema({
   completed: { type: Boolean, default: false },
   date: Date,
   coords: {
-    lat: Number,
-    long: Number
+    lat: String,
+    long: String
   }
 });
 
