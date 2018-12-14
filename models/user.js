@@ -7,6 +7,12 @@ const userSchema = new mongoose.Schema({
   firstName: {type: String, required: true},
   lastName: {type: String, required: true},
   phoneNumber: {type: String, required: true},
+  address: {
+    street: {type: String},
+    city: {type: String},
+    state: {type: String},
+    zip: {type: String},
+  },
   type: {type: String, enum: ['DRIVER', 'USER'], default: 'USER', required: true}
 });
 
@@ -16,6 +22,10 @@ userSchema.virtual('fullName').get(function() {
 
 userSchema.virtual('id').get(function() {
   return this._id;
+});
+
+userSchema.virtual('userAddress').get(function() {
+  return `${this.address.street} ${this.address.city} ${this.address.state} ${this.address.zip}`;
 });
 
 userSchema.set("toJSON", {
