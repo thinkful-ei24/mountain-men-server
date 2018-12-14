@@ -20,6 +20,7 @@ app.get('/:id', (req, res, next) => {
   const userId = req.params.id;
   if(!mongoose.Types.ObjectId.isValid(userId)) {
     const err = new Error('Path is not a valid user id');
+    err.status = 404;
     return next(err);
   }
    return Bid.find({userId})

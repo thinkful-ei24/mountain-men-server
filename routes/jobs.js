@@ -108,8 +108,16 @@ app.post("/:id", requireFields(jobPostFields), (req, res, next) => {
     .catch(err => next(err));
 });
 
+// TODO: no restrictions on type, limited userId restrictions (add "account only" middleware for userId auth)
+// ObjectId middleware? may not be necessary
 app.put("/:userId/:jobId", (req, res, next) => {
   const { userId, jobId } = req.params;
+
+  if(!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(jobId)) {
+    const err = new Error('Path is not a valid user id');
+    err.status = 404;
+    return next(err);
+  }
 
   const newObj = {};
 
@@ -128,12 +136,7 @@ app.put("/:userId/:jobId", (req, res, next) => {
     .then(result => {
       res.json(result);
     })
-
-    .catch(err => {
-      console.error(`ERROR: ${err.message}`);
-      console.error(err);
-      next();
-    });
+    .catch(err => next(err));
 });
 
 module.exports = app;
