@@ -4,6 +4,7 @@ const app = require('../index');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
+const User = require('../models/user');
 const {TEST_DATABASE_URL} = require('../config');
 const {dbConnect, dbDisconnect} = require('../db-mongoose');
 
@@ -17,6 +18,8 @@ process.stdout.write('\x1Bc\n');
 const expect = chai.expect;
 chai.use(chaiHttp);
 
+// TODO: sandbox for test coverage
+
 describe('User and profile endpoints', function() {
 
   before(function() {
@@ -26,6 +29,8 @@ describe('User and profile endpoints', function() {
   after(function() {
     return dbDisconnect();
   });
+
+  // TODO: add data for testing
 
   // beforeEach(function () {
   //   // sandbox
@@ -39,12 +44,12 @@ describe('User and profile endpoints', function() {
   //     });
   // });
 
-  // afterEach(function () {
-  //   // sandbox.restore();
-  //   return Promise.all([
-  //     // deleteMany
-  //   ]);
-  // });
+  afterEach(function () {
+    // sandbox.restore();
+    return Promise.all([
+      // deleteMany
+    ]);
+  });
 
   describe.only('POST /register', function() {
     it.only('should create a new account when given valid credentials', function() {
@@ -61,14 +66,17 @@ describe('User and profile endpoints', function() {
         .post('/register')
         .send(data)
         .then(res => {
-          // TODO: add more thorough testing
+          console.log(res);
           expect(res).to.have.status(201);
+          expect(res).to.have.header('location');
+          expect(res).to.be.json;
           expect(res.body).to.be.an('object');
+          // expect(res.body).to.have.all.keys('id', 'title', 'content', 'createdAt', 'updatedAt', 'tags', 'folderId', 'userId');
         });
     });
 
     it('should fail to create an account when some fields are missing', function() {
-  
+      
     });
 
     it('should fail to create an account when an email address is already in use', function() {

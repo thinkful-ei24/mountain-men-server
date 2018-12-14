@@ -26,6 +26,8 @@ describe('Posting job requests and bidding', function() {
     return dbDisconnect();
   });
 
+  // TODO: add data for testing
+  
   // beforeEach(function () {
   //   // sandbox
   //   return Promise.all([
@@ -44,6 +46,8 @@ describe('Posting job requests and bidding', function() {
   //     // deleteMany
   //   ]);
   // });
+
+  // TODO: sandbox for test coverage
 
   describe('POST /api/jobs/userId', function() {
     it('should create an empty job posting for a particular user', function() {
