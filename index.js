@@ -7,7 +7,7 @@ const passport = require('passport');
 const localStrategy = require('./passport/local');
 const jwtStrategy = require('./passport/jwt');
 
-const { PORT, CLIENT_ORIGIN } = require('./config');
+const { PORT, CLIENT_ORIGIN, DATABASE_NAME } = require('./config');
 const { dbConnect } = require('./db-mongoose');
 
 const authRouter = require('./routes/auth');
@@ -53,6 +53,7 @@ app.use((err, req, res, next) => {
 });
 
 function runServer(port = PORT) {
+  dbConnect();
   const server = app
     .listen(port, () => {
       console.info(`App listening on port ${server.address().port}`);
@@ -64,7 +65,6 @@ function runServer(port = PORT) {
 }
 
 if (require.main === module) {
-  dbConnect();
   runServer();
 }
 

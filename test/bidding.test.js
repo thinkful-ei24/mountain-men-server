@@ -3,7 +3,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
-const {TEST_DATABASE_URL} = require('../config');
+const {TEST_DATABASE_NAME} = require('../config');
 const {dbConnect, dbDisconnect} = require('../db-mongoose');
 
 // Set NODE_ENV to `test` to disable http layer logs
@@ -19,7 +19,7 @@ chai.use(chaiHttp);
 describe('Posting job requests and bidding', function() {
 
   before(function() {
-    return dbConnect(TEST_DATABASE_URL);
+    return dbConnect(TEST_DATABASE_NAME);
   });
   
   after(function() {

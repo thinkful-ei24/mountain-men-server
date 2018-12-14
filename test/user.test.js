@@ -5,7 +5,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 
 const User = require('../models/user');
-const {TEST_DATABASE_URL} = require('../config');
+const {TEST_DATABASE_NAME} = require('../config');
 const {dbConnect, dbDisconnect} = require('../db-mongoose');
 
 // Set NODE_ENV to `test` to disable http layer logs
@@ -23,7 +23,7 @@ chai.use(chaiHttp);
 describe('User and profile endpoints', function() {
 
   before(function() {
-    return dbConnect(TEST_DATABASE_URL);
+    return dbConnect(TEST_DATABASE_NAME);
   });
   
   after(function() {
@@ -54,7 +54,7 @@ describe('User and profile endpoints', function() {
   describe.only('POST /register', function() {
     it.only('should create a new account when given valid credentials', function() {
       const data = {
-        email: 'testaccount@email.com',
+        email: 'testaccount549@email.com',
         password: 'passwordwithmorethansixcharacters',
         firstName: 'foo',
         lastName: 'bar',
