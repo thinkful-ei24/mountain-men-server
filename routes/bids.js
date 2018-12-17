@@ -16,33 +16,35 @@ app.get("/", (req, res, next) => {
 });
 
 // protected
-app.get('/:id', (req, res, next) => {
+app.get("/:id", (req, res, next) => {
   const userId = req.params.id;
-  if(!mongoose.Types.ObjectId.isValid(userId)) {
-    const err = new Error('Path is not a valid user id');
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    const err = new Error("Path is not a valid user id");
     err.status = 404;
     return next(err);
   }
-   return Bid.find({userId})
+  return Bid.find({ userId })
     .then(dbRes => {
       return res.json(dbRes).status(200);
-    }).catch(err => {
+    })
+    .catch(err => {
       return next(err);
     });
 });
 
 //get post for count
-app.get('/:jobId', (req, res, next) => {
+app.get("/:jobId", (req, res, next) => {
   const jobId = req.params.jobId;
   const userId = req.params.id;
-  if(!mongoose.Types.ObjectId.isValid(userId)) {
-    const err = new Error('Path is not a valid user id');
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    const err = new Error("Path is not a valid user id");
     return next(err);
   }
-   return Bid.find({userId, jobId})
+  return Bid.find({ userId, jobId })
     .then(dbRes => {
       return res.json(dbRes).status(200);
-    }).catch(err => {
+    })
+    .catch(err => {
       return next(err);
     });
 });
@@ -56,7 +58,6 @@ app.post("/:id", (req, res, next) => {
   // FIXME: doesn't check to see if the user id matches the path id
   const userId = req.user.id;
   console.log(req.body, req.user.id);
-
 
   // FIXME: refactor into middleware
   const requiredFields = ["jobId", "bidAmount", "bidDescription"];
@@ -100,31 +101,33 @@ app.post("/:id", (req, res, next) => {
     .catch(err => next(err));
 });
 
+
+app.put("/:id", (req, res, next) => {
+  const { id: userId } = req.user;
+  const { jobId, bidAmount, bidDescription } = req.body;
+  const updatedObject = {
+    userId,
+    jobId,
+    bidAmount,
+    bidDescription
+  };
+
+  console.log(updatedObject);
+
+  if (userId !== req.params.id) {
+    const err = new Error("Unauthorized to edit this bid");
+    err.status = 401;
+    return next(err);
+  }
+
+  Bid.findOneAndUpdate({ _id: userId }, updatedObject, { new: true })
+    .then(dbRes => {
+      return res.json(dbRes);
+    })
+    .catch(err => {
+      err.status = 400;
+      return next(err);
+    });
+});
+
 module.exports = app;
-
-
-// {
-	// "email": "hi@hello",
-	// "password": "hellothere",
-// 	"firstName": "aaron",
-// 	"lastName": "whitehead",
-// 	"address": "h",
-// 	"phoneNumber": "1111111111",
-// 	"type": "DRIVER"
-// }
-// userId: "5c0dce3a6519773c8caf3458"
-
-
-
-// {
-// 	"email": "hiya@hello",
-// 	"password": "hellothere",
-// 	"firstName": "aaron",
-// 	"lastName": "whitehead",
-// 	"address": "h",
-// 	"phoneNumber": "1111111111",
-// 	"type": "USER"
-// }
-// userId: "5c0dce5b4e81d14388b7b2ff"
-// authToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InR5cGUiOiJVU0VSIiwiZW1haWwiOiJoaXlhQGhlbGxvIiwiZmlyc3ROYW1lIjoiYWFyb24iLCJsYXN0TmFtZSI6IndoaXRlaGVhZCIsInBob25lTnVtYmVyIjoiMTExMTExMTExMSIsImFkZHJlc3MiOiJoIiwiZnVsbE5hbWUiOiJ1bmRlZmluZWQgdW5kZWZpbmVkIiwiaWQiOiI1YzBkY2U1YjRlODFkMTQzODhiN2IyZmYifSwiaWF0IjoxNTQ0NDA4NjkwLCJleHAiOjE1NDUwMTM0OTAsInN1YiI6ImhpeWFAaGVsbG8ifQ.z6vMkIucqT6U4XmNEwhBLeU8cat_hy91utc9SkImL2E"
-// jobId: "5c0dcf619ec56a27203754c5"
