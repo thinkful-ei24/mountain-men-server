@@ -7,7 +7,7 @@ const users = [
     address: '600 South Fairground Ave',
     _id: '000000000000000000000001',
     type: 'USER',
-    password: '$2a$10$Qrr9jP8/.Ld0mOkxcHtcR./OwKx2AFzau59uksXpdp0Tw1F6i6wgu'
+    password: '$2a$10$oPenAE5FxfrwdN6ut36QWu1EHKVR1f24Hmq6OCQ.IauzHeQxHB3H2'
   },
   {
     email: 'werodeintrucks@gmail.com',

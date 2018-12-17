@@ -27,6 +27,7 @@ router.use(
 );
 
 router.put('/:id', (req, res, next) => {
+  console.log(req.user);
   const {id: userId} = req.user;
   const {email, firstName, lastName, phoneNumber, address, type} = req.body;
 
@@ -36,6 +37,8 @@ router.put('/:id', (req, res, next) => {
 
   // FIXME: update id check
   if(userId !== req.params.id) {
+    console.log('userId', userId);
+    console.log('req.params.id', req.params.id);
     const err = new Error('User ids do not match');
     err.status = 403;
     return next(err);

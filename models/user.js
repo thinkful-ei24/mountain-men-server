@@ -19,7 +19,7 @@ userSchema.virtual('id').get(function() {
   return this._id;
 });
 
-userSchema.set("toJSON", {
+const transformParams = {
   virtuals: true,
   versionKey: false,
   transform: (doc, ret) => {
@@ -28,7 +28,12 @@ userSchema.set("toJSON", {
     delete ret.password;
     return ret;
   }
-});
+};
+
+// Used for endpoints and most data transformation
+userSchema.set("toJSON", transformParams);
+// Pretty much only needed for testing
+userSchema.set("toObject", transformParams);
 
 userSchema.methods.validatePassword = function(password) {
   return bcrypt.compare(password, this.password);

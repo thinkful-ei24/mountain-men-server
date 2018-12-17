@@ -3,11 +3,13 @@
 const app = require('../index');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
-const {TEST_DATABASE_NAME} = require('../config');
+const {TEST_DATABASE_NAME, JWT_SECRET} = require('../config');
 const {dbConnect, dbDisconnect} = require('../db-mongoose');
-const users = require('../seed-data/users');
+
+let users = require('../seed-data/users');
 
 // Set NODE_ENV to `test` to disable http layer logs
 // You can do this in the command line, but this is cross-platform
@@ -19,8 +21,6 @@ process.stdout.write('\x1Bc\n');
 const expect = chai.expect;
 chai.use(chaiHttp);
 
-// TODO: sandbox for test coverage
-
 describe('User and profile endpoints', function() {
 
   before(function() {
@@ -31,20 +31,18 @@ describe('User and profile endpoints', function() {
     return dbDisconnect();
   });
 
-  // TODO: add data for testing
-
   let user;
+  let token;
 
   beforeEach(function () {
-    // sandbox
+    // TODO: sandbox?
     return Promise.all([
       User.insertMany(users)
     ])
       .then(res => {
-        console.log(res);
-        user = users[0];
-        console.log(user);
-        // token = jwt.sign({user}, JWT_SECRET, {subject: user.username});
+        // console.log('RES', res);
+        user = res[0][0];
+        token = jwt.sign({user}, JWT_SECRET, {subject: user.email});
       });
   });
 
@@ -55,7 +53,7 @@ describe('User and profile endpoints', function() {
     ]);
   });
 
-  describe.only('POST /register', function() {
+  describe('POST /register', function() {
     it('should create a new account when given valid credentials', function() {
       const data = {
         email: 'testaccount@email.com',
@@ -95,7 +93,7 @@ describe('User and profile endpoints', function() {
         });
     });
 
-    it.only('should fail to create an account when an email address is already in use', function() {
+    it('should fail to create an account when an email address is already in use', function() {
       const firstAccount = {
         email: 'duplicateaccount@email.com',
         password: 'passwordwithmorethansixcharacters',
@@ -130,16 +128,30 @@ describe('User and profile endpoints', function() {
   });
 
   describe('PUT /api/profile', function() {
-    it('should change user profile information given all the required fields', function() {
+    it.only('should change user profile information given all the required fields', function() {
+
       const data = {
-        email: 'testaccount@email.com',
+        email: 'truckyeah@gmail.com',
         password: 'passwordwithmorethansixcharacters',
-        firstName: 'foo',
-        lastName: 'bar',
+        firstName: 'Tim',
+        lastName: 'McGraw',
         phoneNumber: '7777777',
-        address: '101 Bot Drive',
+        address: 'country roads',
         type: 'DRIVER'
       };
+      console.log(user._id);
+      console.log(token);
+      return chai.request(app)
+        .put(`/api/profile/${user._id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(data)
+        .then(res => {
+          console.log(res.body);
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body.phoneNumber).to.equal('7777777');
+          expect(res.body.address).to.equal('country roads');
+        });
     });
 
     it('should not modify user profile settings if fields are missing', function() {

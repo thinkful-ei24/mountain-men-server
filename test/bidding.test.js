@@ -36,7 +36,7 @@ describe('Posting job requests and bidding', function() {
   //     .then(res => {
   //       console.log(res);
   //       // user = users[0];
-  //       // token = jwt.sign({user}, JWT_SECRET, {subject: user.username});
+  //       // token = jwt.sign({user}, JWT_SECRET, {subject: user.email});
   //     });
   // });
 
