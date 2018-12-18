@@ -1,6 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const User = require('../models/user');
+const {requireFields} = require('../utils/validation');
 
 const removeEmpty = (obj) =>
   Object.keys(obj)
@@ -23,9 +24,10 @@ router.get('/:id', (req, res, next) => {
   User.findById(id)
     .then(dbRes => {
       const profileInfo = dbRes.toJSON();
-      // delete profileInfo.address;
+      delete profileInfo.address;
       // delete profileInfo.phoneNumber;
       // delete profileInfo.email;
+      // TODO: delete new location information once it's set in user
       res.json(profileInfo);
     })
     .catch(err => {
@@ -38,7 +40,9 @@ router.use(
   passport.authenticate("jwt", { session: false, failWithError: true })
 );
 
-router.put('/:id', (req, res, next) => {
+const reqProfileFields = ['email', 'firstName', 'lastName', 'phoneNumber', 'address', 'type'];
+router.put('/:id', requireFields(reqProfileFields), (req, res, next) => {
+  console.log('hello');
   const {id: userId} = req.user;
   const {email, firstName, lastName, phoneNumber, address, type} = req.body;
 
@@ -49,9 +53,10 @@ router.put('/:id', (req, res, next) => {
   updatedObject = removeEmpty(updatedObject);
 
   // FIXME: update id check
+
   if(userId !== req.params.id) {
-    const err = new Error('User ids do not match');
-    err.status = 403;
+    const err = new Error('Unauthorized to edit this profile');
+    err.status = 401;
     return next(err);
   }
 

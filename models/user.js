@@ -7,7 +7,16 @@ const userSchema = new mongoose.Schema({
   firstName: {type: String, required: true},
   lastName: {type: String, required: true},
   phoneNumber: {type: String, required: true},
-  address: {type: String, required: true},
+  address: {
+    street: {type: String},
+    city: {type: String},
+    state: {type: String},
+    zip: {type: String},
+  },
+  coords: {
+    lat: String,
+    lng: String
+  },
   type: {type: String, enum: ['DRIVER', 'USER'], default: 'USER', required: true}
 });
 
@@ -20,7 +29,7 @@ userSchema.virtual('id').get(function() {
 });
 
 const transformParams = {
-  virtuals: true,
+    virtuals: true,
   versionKey: false,
   transform: (doc, ret) => {
     delete ret._id;
@@ -29,6 +38,10 @@ const transformParams = {
     return ret;
   }
 };
+
+userSchema.virtual('userAddress').get(function() {
+  return `${this.address.street} ${this.address.city} ${this.address.state} ${this.address.zip}`;
+});
 
 // Used for endpoints and most data transformation
 userSchema.set("toJSON", transformParams);

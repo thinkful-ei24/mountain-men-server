@@ -46,6 +46,9 @@ app.use('/login', authRouter);
 app.use((err, req, res, next) => {
   if(err.message) {
     const errBody = Object.assign({}, err, { message: err.message });
+    if (!err.status) {
+      err.status = 500;
+    }
     res.status(err.status).json(errBody);
   } else {
     res.status(500).json({ message: 'Internal server error' });

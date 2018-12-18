@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.String;
 
 const bidSchema = new mongoose.Schema({
-  userId: {type: ObjectId, ref: 'User', required: true, unique: true},
+  userId: {type: ObjectId, ref: 'User', required: true},
   jobId: {type: ObjectId, ref: 'Post', required: true},
   bidAmount: {type: Number, required: true},
   bidDescription: {type: String, required: true}
