@@ -80,9 +80,3 @@ describe('Posting job requests and bidding', function() {
     });
   });
 });
-
-describe('Mocha and Chai', function() {
-  it('should be properly setup', function() {
-    expect(true).to.be.true;
-  });
-});

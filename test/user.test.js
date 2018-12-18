@@ -9,7 +9,7 @@ const User = require('../models/user');
 const {TEST_DATABASE_NAME, JWT_SECRET} = require('../config');
 const {dbConnect, dbDisconnect} = require('../db-mongoose');
 
-let users = require('../seed-data/users');
+const users = require('../seed-data/users');
 
 // Set NODE_ENV to `test` to disable http layer logs
 // You can do this in the command line, but this is cross-platform
@@ -40,7 +40,7 @@ describe('User and profile endpoints', function() {
       User.insertMany(users)
     ])
       .then(res => {
-        // console.log('RES', res);
+        // FIXME: why is this a 2d array
         user = res[0][0];
         token = jwt.sign({user}, JWT_SECRET, {subject: user.email});
       });
@@ -128,44 +128,50 @@ describe('User and profile endpoints', function() {
   });
 
   describe('PUT /api/profile', function() {
-    it.only('should change user profile information given all the required fields', function() {
+    it('should change user profile information given all the required fields', function() {
 
       const data = {
-        email: 'truckyeah@gmail.com',
-        password: 'passwordwithmorethansixcharacters',
-        firstName: 'Tim',
-        lastName: 'McGraw',
         phoneNumber: '7777777',
         address: 'country roads',
-        type: 'DRIVER'
       };
-      console.log(user._id);
-      console.log(token);
       return chai.request(app)
         .put(`/api/profile/${user._id}`)
         .set('Authorization', `Bearer ${token}`)
         .send(data)
         .then(res => {
-          console.log(res.body);
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body.phoneNumber).to.equal('7777777');
           expect(res.body.address).to.equal('country roads');
         });
     });
-
-    it('should not modify user profile settings if fields are missing', function() {
-  
-    });
   });
 
   describe('GET /api/profile', function() {
-    it('should show a limited amount of data for all user accounts', function() {
 
+    it.only('should show a limited amount of personal data for any user account', function() {
+      return chai.request(app)
+        .get(`/api/profile/${user.id}`)
+        .then(res => {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.all.keys('type', 'firstName', 'lastName', 'fullName', 'id');
+        });
     });
 
-    it('should only show personal information for the authorized user, not other accounts', function() {
-      
+    it('should show personal information for an authorized user', function() {
+      return chai.request(app)
+        .get(`/api/profile/${user.id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .then(res => {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.all.keys('type', 'firstName', 'lastName', 'fullName', 'id', 'address', 'email', 'phoneNumber');
+        });
     });
+
+    // it.only('should show a limited amount of data for all user accounts', function() {});
   });
 });
