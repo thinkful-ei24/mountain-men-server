@@ -25,7 +25,6 @@ const users = [
       state: 'UT',
       zip: '84123'
     },
-    address: '637 Richardson Drive',
     _id: '000000000000000000000002',
     type: 'USER',
     password: '$2a$10$BRu9S07Y1ZArQ9G/Vpr.w.eykrlm6McZEzXNN99C5M/0ynCyoFbAS'
