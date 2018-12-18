@@ -28,12 +28,8 @@ userSchema.virtual('id').get(function() {
   return this._id;
 });
 
-userSchema.virtual('userAddress').get(function() {
-  return `${this.address.street} ${this.address.city} ${this.address.state} ${this.address.zip}`;
-});
-
-userSchema.set("toJSON", {
-  virtuals: true,
+const transformParams = {
+    virtuals: true,
   versionKey: false,
   transform: (doc, ret) => {
     delete ret._id;
@@ -41,7 +37,16 @@ userSchema.set("toJSON", {
     delete ret.password;
     return ret;
   }
+};
+
+userSchema.virtual('userAddress').get(function() {
+  return `${this.address.street} ${this.address.city} ${this.address.state} ${this.address.zip}`;
 });
+
+// Used for endpoints and most data transformation
+userSchema.set("toJSON", transformParams);
+// Pretty much only needed for testing
+userSchema.set("toObject", transformParams);
 
 userSchema.methods.validatePassword = function(password) {
   return bcrypt.compare(password, this.password);

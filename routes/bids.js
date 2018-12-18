@@ -23,6 +23,7 @@ app.get("/:id", (req, res, next) => {
     err.status = 404;
     return next(err);
   }
+
   return Bid.find({ userId })
     .then(dbRes => {
       return res.json(dbRes).status(200);
@@ -40,6 +41,7 @@ app.get("/:jobId", (req, res, next) => {
     const err = new Error("Path is not a valid user id");
     return next(err);
   }
+
   return Bid.find({ userId, jobId })
     .then(dbRes => {
       return res.json(dbRes).status(200);

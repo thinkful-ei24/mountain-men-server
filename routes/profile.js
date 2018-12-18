@@ -3,6 +3,18 @@ const passport = require('passport');
 const User = require('../models/user');
 const {requireFields} = require('../utils/validation');
 
+const removeEmpty = (obj) =>
+  Object.keys(obj)
+    .filter(key => obj[key] !== null && obj[key] !== undefined)
+    .reduce((newObj, key) => {
+      // https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript
+      if(typeof obj[key] === 'object') {
+        return Object.assign(newObj, {[key]: removeEmpty(obj[key])}); // for nested objects
+      } else {
+        return Object.assign(newObj, {[key]: obj[key]}); // copy
+      }
+    }, {});
+
 const router = express.Router();
 
 // public profile info
@@ -34,11 +46,13 @@ router.put('/:id', requireFields(reqProfileFields), (req, res, next) => {
   const {id: userId} = req.user;
   const {email, firstName, lastName, phoneNumber, address, type} = req.body;
 
-  const updatedObject = {
+  let updatedObject = {
     email, firstName, lastName, phoneNumber, address, type
   };
 
-  console.log(updatedObject);
+  updatedObject = removeEmpty(updatedObject);
+
+  // FIXME: update id check
 
   if(userId !== req.params.id) {
     const err = new Error('Unauthorized to edit this profile');
