@@ -48,6 +48,7 @@ app.get("/:id", (req, res, next) => {
     return next(err);
   }
   return Post.find({ userId })
+    .sort({date: '-1'})
     .then(dbRes => {
       return res.json(dbRes).status(200);
     })
