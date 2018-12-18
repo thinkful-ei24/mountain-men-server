@@ -4,7 +4,12 @@ const users = [
     firstName: 'Tim',
     lastName: 'McGraw',
     phoneNumber: '2025550180',
-    address: '600 South Fairground Ave',
+    address: {
+      street: '3388 Eastcrest Rd',
+      city: 'West Valley City',
+      state: 'UT',
+      zip: '84120'
+    },
     _id: '000000000000000000000001',
     type: 'USER',
     password: '$2a$10$oPenAE5FxfrwdN6ut36QWu1EHKVR1f24Hmq6OCQ.IauzHeQxHB3H2'
@@ -14,6 +19,12 @@ const users = [
     firstName: 'Luke',
     lastName: 'Bryan',
     phoneNumber: '2025550168',
+    address: {
+      street: '1574 4535 S',
+      city: 'Taylorsville',
+      state: 'UT',
+      zip: '84123'
+    },
     address: '637 Richardson Drive',
     _id: '000000000000000000000002',
     type: 'USER',
@@ -24,7 +35,12 @@ const users = [
     firstName: 'Lee',
     lastName: 'Brice',
     phoneNumber: '2025550148',
-    address: '361 Ann Ave',
+    address: {
+      street: '532 E Emerson Ave',
+      city: 'Salt Lake City',
+      state: 'UT',
+      zip: '84105'
+    },
     _id: '000000000000000000000003',
     type: 'DRIVER',
     password: '$2a$10$GvqiYAYuyu0QKf8SlIynMu1oXi8LNpHggMJ5a10vhXtSTFs0bKd4a'
@@ -34,7 +50,12 @@ const users = [
     firstName: 'Joe',
     lastName: 'Diffie',
     phoneNumber: '2025550168',
-    address: '8335 North Bow Ridge Drive',
+    address: {
+      street: '1275 Gillespie Ave',
+      city: 'Salt Lake City',
+      state: 'UT',
+      zip: '84104'
+    },
     _id: '000000000000000000000004',
     type: 'DRIVER',
     password: '$2a$10$2VdT.O19Qfktj5I5/dw.iOhJBvSNpvcpumXN.XiFBZbrNoBuryrGq'
