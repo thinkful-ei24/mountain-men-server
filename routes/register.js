@@ -76,6 +76,10 @@ router.post("/", requireFields(expectedFields),
             }
             next(err);
           });
+      })
+      .catch(err => {
+        console.log(err);
+        next(err)
       });
   });
 
