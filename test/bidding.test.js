@@ -2,8 +2,16 @@
 
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const jwt = require('jsonwebtoken');
 
-const {TEST_DATABASE_NAME} = require('../config');
+const User = require('../seed-data/users');
+const Post = require('../models/post');
+const Bid = require('../models/bid');
+const users = require('../seed-data/users');
+const jobs = require('../seed-data/jobs');
+const bids = require('../seed-data/bids');
+
+const {TEST_DATABASE_NAME, JWT_SECRET} = require('../config');
 const {dbConnect, dbDisconnect} = require('../db-mongoose');
 
 // Set NODE_ENV to `test` to disable http layer logs
@@ -25,27 +33,31 @@ describe('Posting job requests and bidding', function() {
   after(function() {
     return dbDisconnect();
   });
-
-  // TODO: add data for testing
   
-  // beforeEach(function () {
-  //   // sandbox
-  //   return Promise.all([
-  //     // insertMany
-  //   ])
-  //     .then(res => {
-  //       console.log(res);
-  //       // user = users[0];
-  //       // token = jwt.sign({user}, JWT_SECRET, {subject: user.email});
-  //     });
-  // });
+  let user;
+  let token;
 
-  // afterEach(function () {
-  //   // sandbox.restore();
-  //   return Promise.all([
-  //     // deleteMany
-  //   ]);
-  // });
+  beforeEach(function () {
+    // sandbox
+    return Promise.all([
+      User.insertMany(users),
+      Post.insertMany(jobs),
+      Bid.insertMany(bids)
+    ])
+      .then(res => {
+        user = res[0][0];
+        token = jwt.sign({user}, JWT_SECRET, {subject: user.email});
+      });
+  });
+
+  afterEach(function () {
+    // sandbox.restore();
+    return Promise.all([
+      User.deleteMany(),
+      Post.deleteMany(),
+      Bid.deleteMany()
+    ]);
+  });
 
   // TODO: sandbox for test coverage
 
