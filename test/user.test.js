@@ -6,7 +6,6 @@ const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
-console.log(User);
 const {TEST_DATABASE_NAME, JWT_SECRET} = require('../config');
 const {dbConnect, dbDisconnect} = require('../db-mongoose');
 
@@ -141,6 +140,10 @@ describe('User and profile endpoints', function() {
         .then(res => {
           expect(res).to.have.status(400);
         });
+    });
+
+    it.skip('should fail to create an account if the address is invalid or malformed', function() {
+
     });
   });
 
