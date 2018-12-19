@@ -59,7 +59,6 @@ app.use(
 app.post("/:id", (req, res, next) => {
   // FIXME: doesn't check to see if the user id matches the path id
   const userId = req.user.id;
-  console.log(req.body, req.user.id);
 
   // FIXME: refactor into middleware
   const requiredFields = ["jobId", "bidAmount", "bidDescription"];
@@ -80,7 +79,7 @@ app.post("/:id", (req, res, next) => {
     bidAmount,
     bidDescription
   };
-  console.log(bidPostingData);
+  
   const isValid = Joi.validate(bidPostingData);
   if (!isValid) {
     const err = new Error(

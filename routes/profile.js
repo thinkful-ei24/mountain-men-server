@@ -44,8 +44,6 @@ router.put('/:id', (req, res, next) => {
   const {id: userId} = req.user;
   const {email, firstName, lastName, phoneNumber, address, type} = req.body;
 
-  console.log('PROFILE PUT', userId);
-
   let updatedObject = {
     email, firstName, lastName, phoneNumber, address, type
   };
@@ -59,8 +57,6 @@ router.put('/:id', (req, res, next) => {
     err.status = 401;
     return next(err);
   }
-
-  console.log('NEW OBJ', updatedObject);
   
   User.findOneAndUpdate({_id: userId}, updatedObject, {new: true})
     .then(dbRes => {
