@@ -40,11 +40,11 @@ router.use(
   passport.authenticate("jwt", { session: false, failWithError: true })
 );
 
-const reqProfileFields = ['email', 'firstName', 'lastName', 'phoneNumber', 'address', 'type'];
-router.put('/:id', requireFields(reqProfileFields), (req, res, next) => {
-  console.log('hello');
+router.put('/:id', (req, res, next) => {
   const {id: userId} = req.user;
   const {email, firstName, lastName, phoneNumber, address, type} = req.body;
+
+  console.log('PROFILE PUT', userId);
 
   let updatedObject = {
     email, firstName, lastName, phoneNumber, address, type
@@ -60,6 +60,8 @@ router.put('/:id', requireFields(reqProfileFields), (req, res, next) => {
     return next(err);
   }
 
+  console.log('NEW OBJ', updatedObject);
+  
   User.findOneAndUpdate({_id: userId}, updatedObject, {new: true})
     .then(dbRes => {
       return res.json(dbRes);

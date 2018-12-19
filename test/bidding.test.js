@@ -24,7 +24,7 @@ process.stdout.write('\x1Bc\n');
 const expect = chai.expect;
 chai.use(chaiHttp);
 
-describe('Posting job requests and bidding', function() {
+describe.skip('Posting job requests and bidding', function() {
 
   before(function() {
     return dbConnect(TEST_DATABASE_NAME);

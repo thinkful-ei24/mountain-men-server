@@ -6,6 +6,7 @@ const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
+console.log(User);
 const {TEST_DATABASE_NAME, JWT_SECRET} = require('../config');
 const {dbConnect, dbDisconnect} = require('../db-mongoose');
 
@@ -61,7 +62,12 @@ describe('User and profile endpoints', function() {
         firstName: 'foo',
         lastName: 'bar',
         phoneNumber: '7777777',
-        address: '101 Bot Drive',
+        address: {
+          street: '2415 I St',
+          city: 'Bedford',
+          state: 'IN',
+          zip: '47421'
+        },
         type: 'DRIVER'
       };
       return chai.request(app)
@@ -72,7 +78,8 @@ describe('User and profile endpoints', function() {
           expect(res).to.have.header('location');
           expect(res).to.be.json;
           expect(res.body).to.be.an('object');
-          expect(res.body).to.have.all.keys('type', 'email', 'firstName', 'lastName', 'phoneNumber', 'address', 'fullName', 'id');
+          expect(res.body).to.have.all.keys('type', 'email', 'firstName', 'lastName',
+            'phoneNumber', 'address', 'fullName', 'id', 'coords', 'userAddress');
         });
     });
 
@@ -100,7 +107,12 @@ describe('User and profile endpoints', function() {
         firstName: 'foo',
         lastName: 'bar',
         phoneNumber: '7777777',
-        address: '101 Bot Drive',
+        address: {
+          street: '2415 I St',
+          city: 'Bedford',
+          state: 'IN',
+          zip: '47421'
+        },
         type: 'DRIVER'
       };
       const secondAccount = {
@@ -109,7 +121,12 @@ describe('User and profile endpoints', function() {
         firstName: 'john',
         lastName: 'doe',
         phoneNumber: '0123456',
-        address: '102 Bot Drive',
+        address: {
+          street: '2415 I St',
+          city: 'Bedford',
+          state: 'IN',
+          zip: '47421'
+        },
         type: 'DRIVER'
       };
       return chai.request(app)
@@ -127,12 +144,12 @@ describe('User and profile endpoints', function() {
     });
   });
 
+  // might be nice to test address changes
   describe('PUT /api/profile', function() {
-    it('should change user profile information given all the required fields', function() {
+    it('should change user profile information given some fields', function() {
 
       const data = {
-        phoneNumber: '7777777',
-        address: 'country roads',
+        phoneNumber: '7777777'
       };
       return chai.request(app)
         .put(`/api/profile/${user._id}`)
@@ -142,7 +159,6 @@ describe('User and profile endpoints', function() {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body.phoneNumber).to.equal('7777777');
-          expect(res.body.address).to.equal('country roads');
         });
     });
   });
@@ -168,7 +184,7 @@ describe('User and profile endpoints', function() {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.an('object');
-          expect(res.body).to.have.all.keys('type', 'firstName', 'lastName', 'fullName', 'id', 'address', 'email', 'phoneNumber');
+          expect(res.body).to.have.all.keys('type', 'firstName', 'lastName', 'fullName', 'id', 'userAddress', 'email', 'phoneNumber');
         });
     });
 
