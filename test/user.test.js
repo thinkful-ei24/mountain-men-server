@@ -6,7 +6,6 @@ const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
-console.log(User);
 const {TEST_DATABASE_NAME, JWT_SECRET} = require('../config');
 const {dbConnect, dbDisconnect} = require('../db-mongoose');
 
@@ -142,6 +141,10 @@ describe('User and profile endpoints', function() {
           expect(res).to.have.status(400);
         });
     });
+
+    it.skip('should fail to create an account if the address is invalid or malformed', function() {
+
+    });
   });
 
   // might be nice to test address changes
@@ -165,6 +168,7 @@ describe('User and profile endpoints', function() {
 
   describe('GET /api/profile', function() {
 
+    // FIXME:
     it.skip('should show a limited amount of personal data for any user account', function() {
       return chai.request(app)
         .get(`/api/profile/${user.id}`)

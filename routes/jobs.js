@@ -95,7 +95,6 @@ app.post("/:id", requireFields(jobPostFields), (req, res, next) => {
       // shouldn't have to look up the user id in the db because it's matched against auth
       Joi.validate(postData, postSchema)
         .then(() => {
-          console.log(postData);
           return Post.create(postData);
         })
         .then(dbRes => {
