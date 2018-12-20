@@ -142,7 +142,31 @@ describe('User and profile endpoints', function() {
         });
     });
 
-    it.skip('should fail to create an account if the address is invalid or malformed', function() {
+    // v2
+    it('should fail to create an account if address fields are not filled out completely', function() {
+      const data = {
+        email: 'duplicateaccount@email.com',
+        password: 'passwordwithmorethansixcharacters',
+        firstName: 'john',
+        lastName: 'doe',
+        phoneNumber: '0123456',
+        address: {
+          street: '2415 I St',
+          city: 'Bedford',
+          state: '',
+          zip: ''
+        },
+        type: 'DRIVER'
+      };
+      return chai.request(app)
+        .post('/register')
+        .send(data)
+        .then(res => {
+          expect(res).to.have.status(422);
+        })
+    });
+    // v2 should prompt the user with more
+    it.skip('should fail to create an account if the address has no geocode results', function() {
 
     });
   });
@@ -150,7 +174,6 @@ describe('User and profile endpoints', function() {
   // might be nice to test address changes
   describe('PUT /api/profile', function() {
     it('should change user profile information given some fields', function() {
-
       const data = {
         phoneNumber: '7777777'
       };
@@ -164,9 +187,23 @@ describe('User and profile endpoints', function() {
           expect(res.body.phoneNumber).to.equal('7777777');
         });
     });
+    it('should ignore other fields that the user tries to set', function() {
+      const data = {
+        randomField: 'fieldData'
+      };
+      return chai.request(app)
+        .put(`/api/profile/${user._id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(data)
+        .then(res => {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.not.have.keys(['randomField']);
+        });
+    });
   });
 
-  describe('GET /api/profile', function() {
+  describe('GET /api/profile/userId', function() {
 
     // FIXME:
     it.skip('should show a limited amount of personal data for any user account', function() {
@@ -191,7 +228,10 @@ describe('User and profile endpoints', function() {
           expect(res.body).to.have.all.keys('type', 'firstName', 'lastName', 'fullName', 'id', 'userAddress', 'email', 'phoneNumber');
         });
     });
-
-    // it.only('should show a limited amount of data for all user accounts', function() {});
   });
+  // describe.skip('GET /api/profile', function() {
+  //   it.only('should show a limited amount of data for all user accounts', function() {
+
+  //   });
+  // })
 });

@@ -143,6 +143,77 @@ describe('Posting job requests and bidding', function() {
     });
   });
 
+  describe('GET /api/jobs', function() {
+    it('should return a list of all jobs', function() {
+      let _job;
+      return Post.findOne()
+        .then(res => {
+          _job = res;
+          return chai.request(app).get(`/api/jobs`);
+        })
+        .then(res => {
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.an('array');
+          // expect(res.body[0]).to.eql(_job);
+        });
+    });
+
+    // v2
+    it.skip('should return a filtered list of all jobs', function() {
+
+    });
+  });
+
+  describe('GET /api/jobs/userId', function() {
+    it('should return a list of jobs that a user posted', function() {
+      return chai.request(app).get(`/api/jobs/${user.id}`)
+        .then(res => {
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.an('array');
+        });
+    });
+    it('should fail to return a list of jobs if the user id is invalid', function() {
+      return chai.request(app).get(`/api/jobs/1468416`)
+        .then(res => {
+          expect(res).to.have.status(404);
+        });
+    });
+  })
+
+  describe('PUT /api/jobs/userId/jobId', function() {
+     it('should allow job posts to be accepted', function() {
+       let post;
+        return Post.findOne()
+          .then(dbRes => {
+            post = dbRes;
+            expect(post.accepted).to.be.false;
+            return chai.request(app).put(`/api/jobs/${post.userId}/${post._id}`)
+              .send({accepted: true})
+              .set('Authorization', `Bearer ${token}`);
+          })
+          .then(res => {
+            expect(res).to.have.status(200);
+            expect(res.body).to.be.an('object');
+            expect(res.body.accepted).to.be.true;
+          });
+     });
+
+    it('should not allow job posts to be accepted without auth', function() {
+      let post;
+      return Post.findOne()
+        .then(res => {
+          post = res;
+          return chai.request(app).put(`/api/jobs/${post.userId}/${post._id}`)
+            .send({accepted: true})
+        })
+        .then(res => {
+          expect(res).to.have.status(401);
+        });
+     });
+      // v2
+      //it('should allow job posts to be partially modified', function() {})
+  });
+
   describe('POST /api/bids/jobId', function() {
     it('should add a bid to a posting if the bid is valid', function() {
       const bid = {
@@ -207,4 +278,16 @@ describe('Posting job requests and bidding', function() {
       
     });
   });
+
+  describe.skip('GET /api/bids/userId', function() {
+    it('should return a list of bids by user id', function() {
+
+    });
+  });
+
+  describe.skip('GET /api/bids', function() {
+    it('should return a list of all bids', function() {
+
+    });
+  })
 });
