@@ -280,23 +280,20 @@ describe('Posting job requests and bidding', function() {
   });
 
   // not a stable endpoint
-  // TODO: broken test
-  describe.skip('GET /api/bids/jobId', function() {
-    it('should return a list of bids from a job id', function() {
+  describe('GET /api/bids/jobId', function() {
+    it.only('should return a list of bids from a job id', function() {
       let bid;
-      return Bid.findOne({userId: user.id})
+      return Bid.findOne()
         .then(dbRes => {
           bid = dbRes;
-          console.log('BID', bid);
           return chai.request(app).get(`/api/bids/${bid.jobId}`)
             .set('Authorization', `Bearer ${token}`)
         })
         .then(res => {
-          // console.log(res);
           expect(res).to.have.status(200);
           expect(res.body).to.be.an('array');
           expect(res.body[0]).to.be.an('object');
-          expect(res.body[0]).to.have.all.keys(['test']);
+          expect(res.body[0]).to.have.all.keys(['bidAmount','bidDescription','id','jobId','userId']);
         })
     });
   });

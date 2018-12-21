@@ -15,34 +15,35 @@ app.get("/", (req, res, next) => {
     .catch(err => next(err));
 });
 
-// protected
-app.get("/:id", (req, res, next) => {
-  const userId = req.params.id;
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    const err = new Error("Path is not a valid user id");
+// FIXME: safe to delete? This route should never have been used
+// app.get("/:id", (req, res, next) => {
+//   const userId = req.params.id;
+//   if (!mongoose.Types.ObjectId.isValid(userId)) {
+//     const err = new Error("Path is not a valid user id");
+//     err.status = 404;
+//     return next(err);
+//   }
+
+//   return Bid.find({ userId })
+//     .then(dbRes => {
+//       return res.json(dbRes).status(200);
+//     })
+//     .catch(err => {
+//       return next(err);
+//     });
+// });
+
+// GET/POST based on jobId... what the client actions expect
+// get post for count
+app.get("/:jobId", (req, res, next) => {
+  const jobId = req.params.jobId;
+  if (!mongoose.Types.ObjectId.isValid(jobId)) {
+    const err = new Error("Path is not a valid job id");
     err.status = 404;
     return next(err);
   }
 
-  return Bid.find({ userId })
-    .then(dbRes => {
-      return res.json(dbRes).status(200);
-    })
-    .catch(err => {
-      return next(err);
-    });
-});
-
-//get post for count
-app.get("/:jobId", (req, res, next) => {
-  const jobId = req.params.jobId;
-  const userId = req.params.id;
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    const err = new Error("Path is not a valid user id");
-    return next(err);
-  }
-
-  return Bid.find({ userId, jobId })
+  return Bid.find({jobId})
     .then(dbRes => {
       return res.json(dbRes).status(200);
     })
