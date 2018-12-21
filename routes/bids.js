@@ -50,7 +50,7 @@ app.get("/:jobId", (req, res, next) => {
     return next(err);
   }
 
-  return Bid.find({jobId, userId})
+  return Bid.find({jobId})
     .then(dbRes => {
       return res.json(dbRes).status(200);
     })
