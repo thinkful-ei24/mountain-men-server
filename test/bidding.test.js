@@ -281,7 +281,31 @@ describe('Posting job requests and bidding', function() {
 
   // not a stable endpoint
   describe('GET /api/bids/jobId', function() {
-    it.only('should return a list of bids from a job id', function() {
+    it('should return a list of bids from a job id', function() {
+      let bid;
+      return Bid.findOne()
+        .then(dbRes => {
+          bid = dbRes;
+          return chai.request(app).get(`/api/bids/${bid.jobId}`)
+            .set('Authorization', `Bearer ${token}`)
+        })
+        .then(res => {
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.an('array');
+          expect(res.body[0]).to.be.an('object');
+          expect(res.body[0]).to.have.all.keys(['bidAmount','bidDescription','id','jobId','userId']);
+        })
+    });
+    it.only('should not allow unauthorized access to bids', function() {
+      return Bid.findOne()
+        .then(dbRes => {
+          return chai.request(app).get(`/api/bids/${dbRes.jobId}`)
+        })
+        .then(res => {
+          expect(res).to.have.status(401);
+        })
+    });
+    it('should return 404 with an invalid id', function() {
       let bid;
       return Bid.findOne()
         .then(dbRes => {
