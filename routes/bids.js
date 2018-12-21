@@ -33,17 +33,24 @@ app.get("/", (req, res, next) => {
 //     });
 // });
 
+
+app.use(
+  "/",
+  passport.authenticate("jwt", { session: false, failWithError: true })
+);
+
 // GET/POST based on jobId... what the client actions expect
 // get post for count
 app.get("/:jobId", (req, res, next) => {
   const jobId = req.params.jobId;
+  const userId = req.user.id;
   if (!mongoose.Types.ObjectId.isValid(jobId)) {
     const err = new Error("Path is not a valid job id");
     err.status = 404;
     return next(err);
   }
 
-  return Bid.find({jobId})
+  return Bid.find({jobId, userId})
     .then(dbRes => {
       return res.json(dbRes).status(200);
     })
@@ -51,11 +58,6 @@ app.get("/:jobId", (req, res, next) => {
       return next(err);
     });
 });
-
-app.use(
-  "/",
-  passport.authenticate("jwt", { session: false, failWithError: true })
-);
 
 app.post("/:id", (req, res, next) => {
   // FIXME: doesn't check to see if the user id matches the path id
@@ -113,8 +115,6 @@ app.put("/:id", (req, res, next) => {
     bidAmount,
     bidDescription
   };
-
-  console.log(updatedObject);
 
   if (userId !== req.params.id) {
     const err = new Error("Unauthorized to edit this bid");
